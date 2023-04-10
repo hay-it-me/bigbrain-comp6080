@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const Login = ({ onSuccess }) => {
   const [email, setEmail] = React.useState('');
@@ -39,6 +39,8 @@ export const Login = ({ onSuccess }) => {
       setErrorOpen(true);
     } else {
       onSuccess(data.token);
+      const navigate = useNavigate();
+      navigate('/');
     }
   }
 
@@ -66,7 +68,7 @@ export const Login = ({ onSuccess }) => {
           <FormControl variant="standard" fullWidth sx={{ mt: 2 }}>
             <InputLabel htmlFor="login-email">Email</InputLabel>
             <Input
-              id="login-username"
+              id="login-email"
               value={email}
               type="email"
               onChange={(event) => {
@@ -80,7 +82,6 @@ export const Login = ({ onSuccess }) => {
             <InputLabel htmlFor="login-password">Password</InputLabel>
             <Input
               id="login-password"
-              label="Password"
               type="password"
               value={password}
               onChange={(event) => {

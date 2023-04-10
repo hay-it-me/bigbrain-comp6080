@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ResponsiveAppBar from './components/Navbar';
 
 import { Login } from './pages/Login';
+import { Register } from './pages/Register';
 
 function App () {
   const [token, setToken] = React.useState(localStorage.getItem('token'));
@@ -18,7 +19,7 @@ function App () {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Login onSuccess={setTokenToLocalStorage} />} />
-            {/* <Route path="/register" element={<Register />} /> */}
+            <Route path="/register" element={<Register onSuccess={setTokenToLocalStorage}/>} />
           </Routes>
         </BrowserRouter>
       </>
