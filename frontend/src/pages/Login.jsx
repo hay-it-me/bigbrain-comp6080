@@ -7,7 +7,9 @@ import {
   Typography,
   Box,
   Card,
-  CardContent
+  CardContent,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import React from 'react';
@@ -16,6 +18,8 @@ import { Link } from 'react-router-dom';
 export const Login = ({ onSuccess }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [errorOpen, setErrorOpen] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   async function loginUser () {
     const response = await fetch('http://localhost:5005/admin/auth/login', {
@@ -30,8 +34,20 @@ export const Login = ({ onSuccess }) => {
     });
 
     const data = await response.json();
-    onSuccess(data.token);
+    if (data.error) {
+      setErrorMessage(data.error);
+      setErrorOpen(true);
+    } else {
+      onSuccess(data.token);
+    }
   }
+
+  const handleErrorClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setErrorOpen(false);
+  };
 
   const loginCard = (
     <React.Fragment>
@@ -52,6 +68,7 @@ export const Login = ({ onSuccess }) => {
             <Input
               id="login-username"
               value={email}
+              type="email"
               onChange={(event) => {
                 setEmail(event.target.value);
               }}
@@ -64,6 +81,7 @@ export const Login = ({ onSuccess }) => {
             <Input
               id="login-password"
               label="Password"
+              type="password"
               value={password}
               onChange={(event) => {
                 setPassword(event.target.value);
@@ -73,7 +91,7 @@ export const Login = ({ onSuccess }) => {
         </div>
         <Button sx={{ mt: 1, mb: 1 }} onClick={loginUser}>Log In</Button>
         <div>
-          <Typography component="subtitle2" >
+          <Typography variant="subtitle2" >
             Don&apos;t have an account? Create one <Link to="/Register">here</Link>
           </Typography>
         </div>
@@ -83,6 +101,11 @@ export const Login = ({ onSuccess }) => {
 
   return (
     <>
+      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+        <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
       <Grid
         container
         justifyContent="center"
