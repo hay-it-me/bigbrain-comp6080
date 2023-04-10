@@ -11,12 +11,10 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import SchoolIcon from '@mui/icons-material/School';
+import { Link } from 'react-router-dom';
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-
-function ResponsiveAppBar () {
+function ResponsiveAppBar ({ onLogout }) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -27,7 +25,7 @@ function ResponsiveAppBar () {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
+  const handleCloseNavMenu = (path) => {
     setAnchorElNav(null);
   };
 
@@ -35,16 +33,22 @@ function ResponsiveAppBar () {
     setAnchorElUser(null);
   };
 
+  const logoutUser = () => {
+    onLogout(true);
+    handleCloseUserMenu();
+  }
+
+  // Appbar design adapted from MUI Appbar example
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          <SchoolIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
             component="a"
-            href="/"
+            href="/dashboard"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -87,19 +91,20 @@ function ResponsiveAppBar () {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key='Dashboard' onClick={handleCloseNavMenu} component={Link} to="/dashboard">
+                    <Typography textAlign="center">Dashboard</Typography>
                 </MenuItem>
-              ))}
+                <MenuItem key='Quizzes' onClick={handleCloseNavMenu} component={Link} to="/quizzes" >
+                    <Typography textAlign="center">Your Quizzes</Typography>
+                </MenuItem>
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+          <SchoolIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap
             component="a"
-            href=""
+            href="/dashboard"
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -111,24 +116,33 @@ function ResponsiveAppBar () {
               textDecoration: 'none',
             }}
           >
-            LOGO
+            BigBrain
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
               <Button
-                key={page}
+                key='dashboard'
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
+                component={Link}
+                to="/dashboard"
               >
-                {page}
+                Dashboard
               </Button>
-            ))}
+              <Button
+                key='quizzes'
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+                component={Link}
+                to="/quizzes"
+              >
+                Quizzes
+              </Button>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt="Your Profile Avatar" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -147,11 +161,9 @@ function ResponsiveAppBar () {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem key='logout' onClick={logoutUser}>
+                <Typography textAlign="center">Logout</Typography>
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>

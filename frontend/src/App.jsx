@@ -1,9 +1,12 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import ResponsiveAppBar from './components/Navbar';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+// Components
 
+// Pages
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { Dashboard } from './pages/Dashboard';
+import { Quizzes } from './pages/Quizzes';
 
 function App () {
   const [token, setToken] = React.useState(localStorage.getItem('token'));
@@ -13,12 +16,20 @@ function App () {
     localStorage.setItem('token', token)
   }
 
+  function logoutUser (logoutStatus) {
+    setToken(null);
+    localStorage.removeItem('token');
+    const navigate = useNavigate();
+    navigate('/login');
+  }
+
   if (!token) {
     return (
       <>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Login onSuccess={setTokenToLocalStorage} />} />
+            <Route path="/login" element={<Login onSuccess={setTokenToLocalStorage} />} />
             <Route path="/register" element={<Register onSuccess={setTokenToLocalStorage}/>} />
           </Routes>
         </BrowserRouter>
@@ -27,11 +38,11 @@ function App () {
   } else {
     return (
       <>
-        <ResponsiveAppBar />
         <BrowserRouter>
           <Routes>
-            {/* <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} /> */}
+            <Route path="/" element={<Dashboard onLogout={logoutUser} />} />
+            <Route path="/dashboard" element={<Dashboard onLogout={logoutUser} /> }/>
+            <Route path="/quizzes" element={<Quizzes onLogout={logoutUser} /> }/>
           </Routes>
         </BrowserRouter>
       </>

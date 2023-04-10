@@ -1,7 +1,7 @@
 import React from 'react';
 import ResponsiveAppBar from '../components/Navbar';
 
-export function Dashboard ({ onLogout }) {
+export const Quizzes = ({ onLogout }) => {
   // Passes logout params to parent component
   const [isLoggedOut, setLoggedOut] = React.useState(false);
   function logoutUser (logoutStatus) {
@@ -12,7 +12,7 @@ export function Dashboard ({ onLogout }) {
   return (
     <>
       <ResponsiveAppBar onLogout={logoutUser} />
-      Hi
+      List of quizzes here
     </>
   )
 }

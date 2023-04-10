@@ -49,7 +49,7 @@ export const Register = ({ onSuccess }) => {
     } else {
       onSuccess(data.token);
       const navigate = useNavigate();
-      navigate('/');
+      navigate('/dashboard');
     }
   }
 
@@ -128,7 +128,7 @@ export const Register = ({ onSuccess }) => {
         <Button sx={{ mt: 1, mb: 1 }} onClick={registerUser}>Register Account</Button>
         <div>
           <Typography variant="subtitle2" >
-            Already have an account? Log in <Link to="/">here</Link>
+            Already have an account? Log in <Link to="/login">here</Link>
           </Typography>
         </div>
       </CardContent>
