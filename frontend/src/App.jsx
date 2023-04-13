@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 // Components
 
 // Pages
@@ -13,10 +13,12 @@ function App () {
 
   function setTokenToLocalStorage (token) {
     setToken(token);
-    localStorage.setItem('token', token)
+    localStorage.setItem('token', token);
+    const navigate = useNavigate();
+    navigate('/dashboard');
   }
 
-  function logoutUser (logoutStatus) {
+  function logoutUser () {
     setToken(null);
     localStorage.removeItem('token');
     const navigate = useNavigate();
@@ -38,10 +40,11 @@ function App () {
   } else {
     return (
       <>
+        {console.log(token)}
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Dashboard onLogout={logoutUser} />} />
-            <Route path="/dashboard" element={<Dashboard onLogout={logoutUser} /> }/>
+            <Route path="/" element={<Navigate replace to="/dashboard" />} />
+            <Route path="/dashboard" element={<Dashboard onLogout={logoutUser} token={token} /> }/>
             <Route path="/quizzes" element={<Quizzes onLogout={logoutUser} /> }/>
           </Routes>
         </BrowserRouter>

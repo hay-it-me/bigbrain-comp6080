@@ -33,7 +33,7 @@ function ResponsiveAppBar ({ onLogout }) {
     setAnchorElUser(null);
   };
 
-  const logoutUser = () => {
+  function logoutUser () {
     onLogout(true);
     handleCloseUserMenu();
   }

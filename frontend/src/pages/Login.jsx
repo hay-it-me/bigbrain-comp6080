@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export const Login = ({ onSuccess }) => {
   const [email, setEmail] = React.useState('');
@@ -39,8 +39,6 @@ export const Login = ({ onSuccess }) => {
       setErrorOpen(true);
     } else {
       onSuccess(data.token);
-      const navigate = useNavigate();
-      navigate('/dashboard');
     }
   }
 
