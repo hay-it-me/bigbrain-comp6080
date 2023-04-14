@@ -13,6 +13,7 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { Quizzes } from './pages/Quizzes';
+import { EditGame } from './pages/EditGame';
 
 function App () {
   const [token, setToken] = React.useState(localStorage.getItem('token'));
@@ -74,6 +75,7 @@ function App () {
           <Routes>
             <Route path="*" element={<Navigate replace to="/dashboard" />} />
             <Route path="/dashboard" element={<Dashboard onLogout={() => logoutUser()} token={token} /> }/>
+            <Route path="/editgame/:gameId" element={<EditGame onLogout={() => logoutUser()} token={token}/>} />
             <Route path="/quizzes" element={<Quizzes onLogout={() => logoutUser()} /> }/>
           </Routes>
         </BrowserRouter>

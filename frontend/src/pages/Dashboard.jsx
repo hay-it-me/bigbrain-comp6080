@@ -110,6 +110,21 @@ export const Dashboard = ({ onLogout, token }) => {
           >
             {quiz.owner}
           </Typography>
+          {quiz.questions
+            ? <Typography
+            variant="body1"
+            color="text.secondary"
+          >
+            {Object.keys(quiz.questions).length} Questions
+            Time to Complete: PLACEHOLDER TXT
+            </Typography>
+            : <Typography
+            variant="body1"
+            color="text.secondary"
+          >
+            No Questions
+            </Typography>
+          }
         </CardContent>
       </Card>
     ))
