@@ -13,24 +13,26 @@ import {
   InputLabel,
   Input,
   Dialog,
-  DialogActions
+  DialogActions,
+  Box
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 import React from 'react';
 import ResponsiveAppBar from '../components/Navbar';
+import { apiRequest } from '../utilities/helpers'
 
-export const Dashboard = ({ token }) => {
+export const Dashboard = ({ onLogout, token }) => {
   const [quizzes, setQuizzes] = React.useState([]);
   const [errorOpen, setErrorOpen] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [newGameDialogOpen, setNewGameDialogOpen] = React.useState(false);
   const [newGameTitle, setNewGameTitle] = React.useState('');
-  const [rerenderQuizzes, setRerenderQuizzes] = React.useState(false)
+  const [rerenderQuizzes, setRerenderQuizzes] = React.useState(false);
 
-  // function logoutUser (logoutStatus) {
-  //   console.log('penis');
-  // }
+  function logoutUser () {
+    onLogout(true);
+  }
 
   const handleErrorClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -40,15 +42,14 @@ export const Dashboard = ({ token }) => {
   };
 
   React.useEffect(async () => {
-    console.log(token);
-    const response = await fetch('http://localhost:5005/admin/quiz', {
+    const options = {
       method: 'GET',
       headers: {
         'Content-type': 'application/json',
         Authorization: `Bearer ${token}`
       }
-    })
-    const data = await response.json();
+    };
+    const data = await apiRequest('/admin/quiz', options)
     console.log(data);
     if (data.error) {
       setErrorMessage(data.error);
@@ -59,7 +60,7 @@ export const Dashboard = ({ token }) => {
   }, [rerenderQuizzes]);
 
   const createNewGame = async () => {
-    const response = await fetch('http://localhost:5005/admin/quiz/new', {
+    const options = {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
@@ -68,8 +69,8 @@ export const Dashboard = ({ token }) => {
       body: JSON.stringify({
         name: newGameTitle
       })
-    });
-    const data = await response.json();
+    };
+    const data = await apiRequest('/admin/quiz/new', options);
     if (data.error) {
       setErrorMessage(data.error)
     } else {
@@ -83,10 +84,10 @@ export const Dashboard = ({ token }) => {
     setNewGameTitle('');
   }
 
-  // Can you fkin exist or something
-  const quizCard = (quiz) => {
-    <React.Fragment>
-      <Card sx={{ maxWidth: 350 }}>
+  // Creates all the quiz cards on the dashboard
+  const QuizCards = ({ quizzes }) => {
+    return quizzes.map((quiz) => (
+      <Card key={quiz.id} sx={{ minWidth: 300, maxWidth: 350, margin: 2 }}>
         <CardHeader
           action={
             <IconButton aria-label="settings">
@@ -100,7 +101,7 @@ export const Dashboard = ({ token }) => {
           component="img"
           height="200"
           image={quiz.thumbnail}
-          alt={quiz.name}
+          alt={quiz.name + ' thumbnail'}
         />
         <CardContent>
           <Typography
@@ -111,7 +112,7 @@ export const Dashboard = ({ token }) => {
           </Typography>
         </CardContent>
       </Card>
-    </React.Fragment>
+    ))
   };
 
   return (
@@ -121,7 +122,7 @@ export const Dashboard = ({ token }) => {
           {errorMessage}
         </Alert>
       </Snackbar>
-      <ResponsiveAppBar />
+      <ResponsiveAppBar setLogout={() => logoutUser()} />
       <Button
         sx={{ marginTop: '30px' }}
         variant="outlined"
@@ -137,7 +138,7 @@ export const Dashboard = ({ token }) => {
           Create a New Game
         </DialogTitle>
         <DialogContent>
-          <FormControl variant="standard" fullWidth sx={{ mt: 2 }}>
+          <FormControl variant="standard" fullWidth >
             <InputLabel htmlFor="new-game-name">Name</InputLabel>
             <Input
               id="new-game-name"
@@ -154,9 +155,11 @@ export const Dashboard = ({ token }) => {
           <Button onClick={createNewGame}>Submit</Button>
         </DialogActions>
       </Dialog>
-      {quizzes.map((quiz) => {
-        return quizCard(quiz);
-      })}
+      <Box sx={{ display: 'flex' }}>
+        <QuizCards
+          quizzes={quizzes}
+        />
+      </Box>
     </>
   )
 }

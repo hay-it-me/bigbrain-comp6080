@@ -1,5 +1,11 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import {
+  Snackbar,
+  Alert
+} from '@mui/material';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+// Helpers
+import { apiRequest } from './utilities/helpers'
 // Components
 
 // Pages
@@ -10,27 +16,46 @@ import { Quizzes } from './pages/Quizzes';
 
 function App () {
   const [token, setToken] = React.useState(localStorage.getItem('token'));
+  // Error handling
+  const [errorOpen, setErrorOpen] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   function setTokenToLocalStorage (token) {
     setToken(token);
     localStorage.setItem('token', token);
-    const navigate = useNavigate();
-    navigate('/dashboard');
   }
 
-  function logoutUser () {
+  async function logoutUser () {
     setToken(null);
     localStorage.removeItem('token');
-    const navigate = useNavigate();
-    navigate('/login');
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({})
+    };
+    const data = await apiRequest('admin/auth/logout', options);
+    if (data.error) {
+      setErrorMessage(data.error);
+      setErrorOpen(true);
+    }
   }
+
+  const handleErrorClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setErrorOpen(false);
+  };
 
   if (!token) {
     return (
       <>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Login onSuccess={setTokenToLocalStorage} />} />
+            <Route path="*" element={<Navigate replace to="/login" />} />
             <Route path="/login" element={<Login onSuccess={setTokenToLocalStorage} />} />
             <Route path="/register" element={<Register onSuccess={setTokenToLocalStorage}/>} />
           </Routes>
@@ -40,12 +65,16 @@ function App () {
   } else {
     return (
       <>
-        {console.log(token)}
+      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+        <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate replace to="/dashboard" />} />
-            <Route path="/dashboard" element={<Dashboard onLogout={logoutUser} token={token} /> }/>
-            <Route path="/quizzes" element={<Quizzes onLogout={logoutUser} /> }/>
+            <Route path="*" element={<Navigate replace to="/dashboard" />} />
+            <Route path="/dashboard" element={<Dashboard onLogout={() => logoutUser()} token={token} /> }/>
+            <Route path="/quizzes" element={<Quizzes onLogout={() => logoutUser()} /> }/>
           </Routes>
         </BrowserRouter>
       </>

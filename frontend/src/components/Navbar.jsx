@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 import SchoolIcon from '@mui/icons-material/School';
 import { Link } from 'react-router-dom';
 
-function ResponsiveAppBar ({ onLogout }) {
+function ResponsiveAppBar ({ setLogout }) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -34,7 +34,7 @@ function ResponsiveAppBar ({ onLogout }) {
   };
 
   function logoutUser () {
-    onLogout(true);
+    setLogout(true);
     handleCloseUserMenu();
   }
 
