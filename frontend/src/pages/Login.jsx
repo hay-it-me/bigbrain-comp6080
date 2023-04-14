@@ -14,12 +14,14 @@ import {
 import SchoolIcon from '@mui/icons-material/School';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useContext, Context } from '../context';
 
 export const Login = ({ onSuccess }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [errorOpen, setErrorOpen] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
+  // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
+  // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
+  const { getters, setters } = useContext(Context);
 
   async function loginUser () {
     const response = await fetch('http://localhost:5005/admin/auth/login', {
@@ -35,8 +37,8 @@ export const Login = ({ onSuccess }) => {
 
     const data = await response.json();
     if (data.error) {
-      setErrorMessage(data.error);
-      setErrorOpen(true);
+      setters.setErrorMessage(data.error);
+      setters.setErrorOpen(true);
     } else {
       onSuccess(data.token);
     }
@@ -46,7 +48,7 @@ export const Login = ({ onSuccess }) => {
     if (reason === 'clickaway') {
       return;
     }
-    setErrorOpen(false);
+    setters.setErrorOpen(false);
   };
 
   const loginCard = (
@@ -100,9 +102,9 @@ export const Login = ({ onSuccess }) => {
 
   return (
     <>
-      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+      <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
         <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {errorMessage}
+          {getters.errorMessage}
         </Alert>
       </Snackbar>
       <Grid

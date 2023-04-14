@@ -4,6 +4,8 @@ import {
   Alert
 } from '@mui/material';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
+import { Context, init } from './context';
 // Helpers
 import { apiRequest } from './utilities/helpers'
 // Components
@@ -18,13 +20,22 @@ import { EditGame } from './pages/EditGame';
 function App () {
   const [token, setToken] = React.useState(localStorage.getItem('token'));
   // Error handling
-  const [errorOpen, setErrorOpen] = React.useState(false);
+  const [errorOpen, setErrorOpen] = React.useState(init.errorOpen);
   const [errorMessage, setErrorMessage] = React.useState('');
-
   function setTokenToLocalStorage (token) {
     setToken(token);
     localStorage.setItem('token', token);
   }
+  const getters = {
+    token,
+    errorOpen,
+    errorMessage
+  };
+  const setters = {
+    setTokenToLocalStorage,
+    setErrorOpen,
+    setErrorMessage
+  };
 
   async function logoutUser () {
     setToken(null);
@@ -55,11 +66,13 @@ function App () {
     return (
       <>
         <BrowserRouter>
-          <Routes>
-            <Route path="*" element={<Navigate replace to="/login" />} />
-            <Route path="/login" element={<Login onSuccess={setTokenToLocalStorage} />} />
-            <Route path="/register" element={<Register onSuccess={setTokenToLocalStorage}/>} />
-          </Routes>
+          <Context.Provider value={{ getters, setters }}>
+            <Routes>
+              <Route path="*" element={<Navigate replace to="/login" />} />
+              <Route path="/login" element={<Login onSuccess={setTokenToLocalStorage} />} />
+              <Route path="/register" element={<Register onSuccess={setTokenToLocalStorage}/>} />
+            </Routes>
+          </Context.Provider>
         </BrowserRouter>
       </>
     );
@@ -72,12 +85,14 @@ function App () {
         </Alert>
       </Snackbar>
         <BrowserRouter>
-          <Routes>
-            <Route path="*" element={<Navigate replace to="/dashboard" />} />
-            <Route path="/dashboard" element={<Dashboard onLogout={() => logoutUser()} token={token} /> }/>
-            <Route path="/editgame/:gameId" element={<EditGame onLogout={() => logoutUser()} token={token}/>} />
-            <Route path="/quizzes" element={<Quizzes onLogout={() => logoutUser()} /> }/>
-          </Routes>
+          <Context.Provider value={{ getters, setters }}>
+            <Routes>
+              <Route path="*" element={<Navigate replace to="/dashboard" />} />
+              <Route path="/dashboard" element={<Dashboard onLogout={() => logoutUser()} /> }/>
+              <Route path="/editgame/:gameId" element={<EditGame onLogout={() => logoutUser()} />} />
+              <Route path="/quizzes" element={<Quizzes onLogout={() => logoutUser()} /> }/>
+            </Routes>
+          </Context.Provider>
         </BrowserRouter>
       </>
     );

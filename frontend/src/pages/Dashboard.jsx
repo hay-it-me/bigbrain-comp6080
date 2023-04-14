@@ -21,14 +21,15 @@ import IconButton from '@mui/material/IconButton';
 import React from 'react';
 import ResponsiveAppBar from '../components/Navbar';
 import { apiRequest } from '../utilities/helpers'
+import { useContext, Context } from '../context';
 
-export const Dashboard = ({ onLogout, token }) => {
+export const Dashboard = ({ onLogout }) => {
   const [quizzes, setQuizzes] = React.useState([]);
-  const [errorOpen, setErrorOpen] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
   const [newGameDialogOpen, setNewGameDialogOpen] = React.useState(false);
   const [newGameTitle, setNewGameTitle] = React.useState('');
   const [rerenderQuizzes, setRerenderQuizzes] = React.useState(false);
+
+  const { getters, setters } = useContext(Context);
 
   function logoutUser () {
     onLogout(true);
@@ -38,7 +39,7 @@ export const Dashboard = ({ onLogout, token }) => {
     if (reason === 'clickaway') {
       return;
     }
-    setErrorOpen(false);
+    setters.setErrorOpen(false);
   };
 
   React.useEffect(async () => {
@@ -46,14 +47,14 @@ export const Dashboard = ({ onLogout, token }) => {
       method: 'GET',
       headers: {
         'Content-type': 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${getters.token}`
       }
     };
     const data = await apiRequest('/admin/quiz', options)
     console.log(data);
     if (data.error) {
-      setErrorMessage(data.error);
-      setErrorOpen(true);
+      setters.setErrorMessage(data.error);
+      setters.setErrorOpen(true);
     } else {
       setQuizzes(data.quizzes);
     }
@@ -64,7 +65,7 @@ export const Dashboard = ({ onLogout, token }) => {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${getters.token}`
       },
       body: JSON.stringify({
         name: newGameTitle
@@ -72,7 +73,7 @@ export const Dashboard = ({ onLogout, token }) => {
     };
     const data = await apiRequest('/admin/quiz/new', options);
     if (data.error) {
-      setErrorMessage(data.error)
+      setters.setErrorMessage(data.error)
     } else {
       setRerenderQuizzes(true);
     }
@@ -132,9 +133,9 @@ export const Dashboard = ({ onLogout, token }) => {
 
   return (
     <>
-      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+      <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
         <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {errorMessage}
+          {getters.errorMessage}
         </Alert>
       </Snackbar>
       <ResponsiveAppBar setLogout={() => logoutUser()} />

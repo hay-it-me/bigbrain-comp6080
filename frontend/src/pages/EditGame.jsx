@@ -14,13 +14,16 @@ import { useParams } from 'react-router-dom';
 import React from 'react';
 import { apiRequest, fileToDataUrl } from '../utilities/helpers'
 import ResponsiveAppBar from '../components/Navbar';
+import { useContext, Context } from '../context';
 
-export const EditGame = ({ onLogout, token }) => {
-  const [errorOpen, setErrorOpen] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
+export const EditGame = ({ onLogout }) => {
+  // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
+  // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
   const [quizQuestions, setQuizQuestions] = React.useState(null);
   const [quizName, setQuizName] = React.useState('');
   const [quizThumbnail, setQuizThumbnail] = React.useState('');
+  const { getters, setters } = useContext(Context);
+
   const { gameId } = useParams();
 
   function logoutUser () {
@@ -31,7 +34,7 @@ export const EditGame = ({ onLogout, token }) => {
     if (reason === 'clickaway') {
       return;
     }
-    setErrorOpen(false);
+    setters.setErrorOpen(false);
   };
 
   const handleFileChange = async (event) => {
@@ -41,8 +44,8 @@ export const EditGame = ({ onLogout, token }) => {
         const dataUrl = await fileToDataUrl(file);
         setQuizThumbnail(dataUrl);
       } catch (error) {
-        setErrorMessage('Error occured whilst reading file');
-        setErrorOpen(true);
+        setters.setErrorMessage('Error occured whilst reading file');
+        setters.setErrorOpen(true);
       }
     }
   };
@@ -52,14 +55,14 @@ export const EditGame = ({ onLogout, token }) => {
       method: 'GET',
       headers: {
         'Content-type': 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${getters.token}`
       }
     };
     const data = await apiRequest('/admin/quiz/' + gameId, options)
     console.log('/admin/quiz/' + gameId);
     if (data.error) {
-      setErrorMessage(data.error);
-      setErrorOpen(true);
+      setters.setErrorMessage(data.error);
+      setters.setErrorOpen(true);
     } else {
       setQuizQuestions(data.questions);
       setQuizName(data.name);
@@ -133,9 +136,9 @@ export const EditGame = ({ onLogout, token }) => {
 
   return (
     <>
-      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+      <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
         <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {errorMessage}
+          {getters.errorMessage}
         </Alert>
       </Snackbar>
       <ResponsiveAppBar setLogout={() => logoutUser()} />
