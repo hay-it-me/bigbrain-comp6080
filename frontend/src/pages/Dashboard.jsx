@@ -1,91 +1,143 @@
 import {
   Snackbar,
   Alert,
-  CardMedia,
-  CardHeader,
-  Card,
-  CardContent,
-  Typography
+  Button,
+  DialogTitle,
+  DialogContent,
+  FormControl,
+  InputLabel,
+  Input,
+  Dialog,
+  DialogActions,
+  Grid,
 } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import IconButton from '@mui/material/IconButton';
 import React from 'react';
 import ResponsiveAppBar from '../components/Navbar';
+import { QuizCard } from '../components/QuizCard';
+import { apiRequest } from '../utilities/helpers'
+import { useContext, Context } from '../context';
 
-export const Dashboard = ({ token }) => {
+export const Dashboard = ({ onLogout }) => {
   const [quizzes, setQuizzes] = React.useState([]);
-  const [errorOpen, setErrorOpen] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
+  const [newGameDialogOpen, setNewGameDialogOpen] = React.useState(false);
+  const [newGameTitle, setNewGameTitle] = React.useState('');
+  const [rerenderQuizzes, setRerenderQuizzes] = React.useState(false);
 
-  function logoutUser (logoutStatus) {
-    console.log('penis');
+  const { getters, setters } = useContext(Context);
+
+  function logoutUser () {
+    onLogout(true);
+  }
+
+  const rerenderQuizList = () => {
+    setRerenderQuizzes(!rerenderQuizzes);
   }
 
   const handleErrorClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
-    setErrorOpen(false);
+    setters.setErrorOpen(false);
   };
 
-  React.useEffect(async function () {
-    console.log(token);
-    const response = await fetch('http://localhost:5005/admin/quiz', {
+  React.useEffect(async () => {
+    const options = {
       method: 'GET',
       headers: {
         'Content-type': 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${getters.token}`
       }
-    })
-    const data = await response.json();
+    };
+    const data = await apiRequest('/admin/quiz', options)
     console.log(data);
     if (data.error) {
-      setErrorMessage(data.error);
-      setErrorOpen(true);
+      setters.setErrorMessage(data.error);
+      setters.setErrorOpen(true);
     } else {
       setQuizzes(data.quizzes);
     }
-  }, []);
+  }, [rerenderQuizzes]);
 
-  const quizCard = (quiz) => {
-    <Card sx={{ maxWidth: 350 }}>
-      <CardHeader
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
-        title={quiz.name}
-        subheader={quiz.createdAt.toLocaleDateString('en-US')}
-      />
-      <CardMedia
-        component="img"
-        height="200"
-        image={quiz.thumbnail}
-        alt={quiz.name}
-      />
-      <CardContent>
-        <Typography
-          variant="body1"
-          color="text.secondary"
-        >
-          {quiz.owner}
-        </Typography>
-      </CardContent>
-    </Card>
+  const createNewGame = async () => {
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${getters.token}`
+      },
+      body: JSON.stringify({
+        name: newGameTitle
+      })
+    };
+    const data = await apiRequest('/admin/quiz/new', options);
+    if (data.error) {
+      setters.setErrorMessage(data.error);
+      setters.setErrorOpen(true);
+    } else {
+      rerenderQuizList();
+    }
+    closeNewGameDialog();
   };
 
+  const closeNewGameDialog = () => {
+    setNewGameDialogOpen(false)
+    setNewGameTitle('');
+  }
   return (
     <>
-      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+      <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
         <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {errorMessage}
+          {getters.errorMessage}
         </Alert>
       </Snackbar>
-      <ResponsiveAppBar onLogout={logoutUser} />
-      {quizzes.map((quiz) => {
-        return quizCard(quiz);
-      })}
+      <ResponsiveAppBar setLogout={() => logoutUser()} />
+      <Button
+        sx={{ marginTop: '30px' }}
+        variant="outlined"
+        onClick={() => setNewGameDialogOpen(true)}
+      >
+        Create a New Game
+      </Button>
+      <Dialog
+        open={newGameDialogOpen}
+        onClose={closeNewGameDialog}
+      >
+        <DialogTitle>
+          Create a New Game
+        </DialogTitle>
+        <DialogContent>
+          <FormControl variant="standard" fullWidth >
+            <InputLabel htmlFor="new-game-name">Name</InputLabel>
+            <Input
+              id="new-game-name"
+              type="text"
+              value={newGameTitle}
+              onChange={(event) => {
+                setNewGameTitle(event.target.value);
+              }}
+            />
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeNewGameDialog}>Cancel</Button>
+          <Button onClick={createNewGame}>Submit</Button>
+        </DialogActions>
+      </Dialog>
+      <Grid
+        container
+        justifyContent="center"
+        spacing={2}
+      >
+        {quizzes.map((quiz) => {
+          return <Grid item xs={12} sm={6} md={4} key={quiz}>
+            <QuizCard
+              quiz={quiz}
+              token={getters.token}
+              onDelete={() => rerenderQuizList()}
+            />
+          </Grid>
+        })}
+      </Grid>
     </>
   )
 }

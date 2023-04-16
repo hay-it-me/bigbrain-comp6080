@@ -2,16 +2,13 @@ import React from 'react';
 import ResponsiveAppBar from '../components/Navbar';
 
 export const Quizzes = ({ onLogout }) => {
-  // Passes logout params to parent component
-  const [isLoggedOut, setLoggedOut] = React.useState(false);
-  function logoutUser (logoutStatus) {
-    setLoggedOut(logoutStatus);
-    console.log(isLoggedOut);
+  function logoutUser () {
+    onLogout(true);
   }
 
   return (
     <>
-      <ResponsiveAppBar onLogout={logoutUser} />
+      <ResponsiveAppBar setLogout={() => logoutUser()} />
       List of quizzes here
     </>
   )

@@ -14,19 +14,21 @@ import {
 import SchoolIcon from '@mui/icons-material/School';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useContext, Context } from '../context';
 
 export const Register = ({ onSuccess }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [name, setName] = React.useState('');
-  const [errorOpen, setErrorOpen] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
+  // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
+  // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
+  const { getters, setters } = useContext(Context);
 
   async function registerUser () {
     if (password !== confirmPassword) {
-      setErrorMessage('Passwords do not match');
-      setErrorOpen(true);
+      setters.setErrorMessage('Passwords do not match');
+      setters.setErrorOpen(true);
       return;
     }
 
@@ -44,8 +46,8 @@ export const Register = ({ onSuccess }) => {
 
     const data = await response.json();
     if (data.error) {
-      setErrorMessage(data.error);
-      setErrorOpen(true);
+      setters.setErrorMessage(data.error);
+      setters.setErrorOpen(true);
     } else {
       onSuccess(data.token);
     }
@@ -55,7 +57,7 @@ export const Register = ({ onSuccess }) => {
     if (reason === 'clickaway') {
       return;
     }
-    setErrorOpen(false);
+    setters.setErrorOpen(false);
   };
 
   const registerCard = (
@@ -135,9 +137,9 @@ export const Register = ({ onSuccess }) => {
 
   return (
     <>
-      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+      <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
         <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {errorMessage}
+          {getters.errorMessage}
         </Alert>
       </Snackbar>
       <Grid
