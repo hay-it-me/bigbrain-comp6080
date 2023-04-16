@@ -1,7 +1,7 @@
 import {
   Grid,
-  Snackbar,
-  Alert,
+  // Snackbar,
+  // Alert,
   FormControl,
   Input,
   Box,
@@ -34,12 +34,12 @@ export const EditGame = () => {
   //   onLogout(true);
   // }
 
-  const handleErrorClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setters.setErrorOpen(false);
-  };
+  // const handleErrorClose = (event, reason) => {
+  //   if (reason === 'clickaway') {
+  //     return;
+  //   }
+  //   setters.setErrorOpen(false);
+  // };
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -190,11 +190,11 @@ export const EditGame = () => {
 
   return (
     <>
-      <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+      {/* <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
         <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
           {getters.errorMessage}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
       {/* <ResponsiveAppBar setLogout={() => logoutUser()} /> */}
       <FlexDiv>
         <Button

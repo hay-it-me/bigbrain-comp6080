@@ -1,6 +1,6 @@
 import {
-  Snackbar,
-  Alert,
+  // Snackbar,
+  // Alert,
   Button,
   DialogTitle,
   DialogContent,
@@ -33,12 +33,12 @@ export const Dashboard = () => {
     setRerenderQuizzes(!rerenderQuizzes);
   }
 
-  const handleErrorClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setters.setErrorOpen(false);
-  };
+  // const handleErrorClose = (event, reason) => {
+  //   if (reason === 'clickaway') {
+  //     return;
+  //   }
+  //   setters.setErrorOpen(false);
+  // };
 
   React.useEffect(async () => {
     const options = {
@@ -85,11 +85,11 @@ export const Dashboard = () => {
   }
   return (
     <>
-      <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+      {/* <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
         <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
           {getters.errorMessage}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
       {/* <ResponsiveAppBar setLogout={() => logoutUser()} /> */}
       <Button
         sx={{ marginTop: '30px' }}

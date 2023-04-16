@@ -8,8 +8,8 @@ import {
   Box,
   Card,
   CardContent,
-  Snackbar,
-  Alert
+  // Snackbar,
+  // Alert
 } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import React from 'react';
@@ -21,7 +21,7 @@ export const Login = ({ onSuccess }) => {
   const [password, setPassword] = React.useState('');
   // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
   // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
-  const { getters, setters } = useContext(Context);
+  const { setters } = useContext(Context);
 
   async function loginUser () {
     const response = await fetch('http://localhost:5005/admin/auth/login', {
@@ -44,12 +44,12 @@ export const Login = ({ onSuccess }) => {
     }
   }
 
-  const handleErrorClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setters.setErrorOpen(false);
-  };
+  // const handleErrorClose = (event, reason) => {
+  //   if (reason === 'clickaway') {
+  //     return;
+  //   }
+  //   setters.setErrorOpen(false);
+  // };
 
   const loginCard = (
     <React.Fragment>
@@ -102,11 +102,11 @@ export const Login = ({ onSuccess }) => {
 
   return (
     <>
-      <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+      {/* <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
         <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
           {getters.errorMessage}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
       <Grid
         container
         justifyContent="center"

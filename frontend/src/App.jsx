@@ -68,6 +68,11 @@ function App () {
   if (!token) {
     return (
       <>
+        <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+          <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
+            {errorMessage}
+          </Alert>
+        </Snackbar>
         <BrowserRouter>
           <Context.Provider value={{ getters, setters }}>
             <Routes>
@@ -95,7 +100,7 @@ function App () {
               <Route path="/dashboard" element={<Dashboard/> }/>
               <Route path="/editgame/:gameId" element={<EditGame/>} />
               <Route path="/quizzes" element={<Quizzes/> }/>
-              <Route path="/viewgame/:sessionId" element={<ViewGame/> }/>
+              <Route path="/viewgame/:quizId/:sessionId" element={<ViewGame/> }/>
             </Routes>
           </Context.Provider>
         </BrowserRouter>

@@ -8,8 +8,8 @@ import {
   Box,
   Card,
   CardContent,
-  Snackbar,
-  Alert
+  // Snackbar,
+  // Alert
 } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import React from 'react';
@@ -24,7 +24,7 @@ export const Register = ({ onSuccess }) => {
   // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
   // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
   const { getters, setters } = useContext(Context);
-
+  console.log(getters)
   async function registerUser () {
     if (password !== confirmPassword) {
       setters.setErrorMessage('Passwords do not match');
@@ -53,12 +53,12 @@ export const Register = ({ onSuccess }) => {
     }
   }
 
-  const handleErrorClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setters.setErrorOpen(false);
-  };
+  // const handleErrorClose = (event, reason) => {
+  //   if (reason === 'clickaway') {
+  //     return;
+  //   }
+  //   setters.setErrorOpen(false);
+  // };
 
   const registerCard = (
     <React.Fragment>
@@ -137,11 +137,11 @@ export const Register = ({ onSuccess }) => {
 
   return (
     <>
-      <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+      {/* <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
         <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
           {getters.errorMessage}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
       <Grid
         container
         justifyContent="center"

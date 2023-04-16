@@ -217,7 +217,7 @@ export const QuizCard = ({ quiz, token, reRender }) => {
             Start Game
           </Button>}
           {quiz.active && <Button
-            component={Link} to={'/viewgame/' + sessionCode}
+            component={Link} to={'/viewgame/' + quiz.id + '/' + quiz.active}
             size='small'
           >
             View Game in Progress
@@ -261,7 +261,7 @@ export const QuizCard = ({ quiz, token, reRender }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => navigator.clipboard.writeText('TODO/' + sessionCode)}>Copy Session URL</Button>
-          <Button component={Link} to={'/viewgame/' + sessionCode}>View Game</Button>
+          <Button component={Link} to={'/viewgame/' + quiz.id + '/' + sessionCode}>View Game</Button>
           <Button onClick={() => endGame(quiz.id, quiz.name)}>End Game</Button>
           <Button onClick={() => setStartGameDialogOpen(false)}>Close</Button>
         </DialogActions>
@@ -276,7 +276,7 @@ export const QuizCard = ({ quiz, token, reRender }) => {
           Would you like to view the results?
         </DialogContent>
         <DialogActions>
-          <Button component={Link} to={'/viewgame/' + sessionCode}>Yes</Button>
+          <Button component={Link} to={'/viewgame/' + quiz.id + '/' + sessionCode}>Yes</Button>
           <Button onClick={() => setEndGameDialogOpen(false)}>No</Button>
         </DialogActions>
       </Dialog>
