@@ -92,7 +92,7 @@ export const Dashboard = () => {
       </Snackbar> */}
       {/* <ResponsiveAppBar setLogout={() => logoutUser()} /> */}
       <Button
-        sx={{ marginTop: '30px' }}
+        // sx={{ marginTop: '30px' }}
         variant="outlined"
         onClick={() => setNewGameDialogOpen(true)}
       >
@@ -133,7 +133,7 @@ export const Dashboard = () => {
             <QuizCard
               quiz={quiz}
               token={getters.token}
-              reRender={() => rerenderQuizList()}
+              rerender={() => rerenderQuizList()}
             />
           </Grid>
         })}

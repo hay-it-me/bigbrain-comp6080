@@ -40,7 +40,7 @@ function ResponsiveAppBar ({ setLogout }) {
 
   // Appbar design adapted from MUI Appbar example
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ marginBottom: '30px' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <SchoolIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />

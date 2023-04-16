@@ -1,65 +1,93 @@
 import { useContext, Context } from '../context';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Button } from '@mui/material';
-// import { apiRequest } from '../utilities/helpers'
+import { Button, Grid, Typography } from '@mui/material';
+import { apiRequest } from '../utilities/helpers'
 
 export const ViewGame = () => {
   const { getters, setters } = useContext(Context);
+  const [active, setActive] = React.useState(false);
+  const [rerenderScreen, setRerenderScreen] = React.useState(false);
 
   const { quizId, sessionId } = useParams();
 
   console.log(getters, setters, sessionId, quizId);
 
-  // const endGame = async () => {
-  //   const optionsGet = {
-  //     method: 'GET',
-  //     headers: {
-  //       accept: 'application/json',
-  //       Authorization: `Bearer ${getters.token}`
-  //     }
-  //   };
-  //   const dataGet = await apiRequest('/admin/quiz/' + quizId, optionsGet);
-  //   if (dataGet.error) {
-  //     setters.setErrorMessage(dataGet.error)
-  //   } else {
-  //     const options = {
-  //       method: 'POST',
-  //       headers: {
-  //         accept: 'application/json',
-  //         Authorization: `Bearer ${getters.token}`
-  //       }
-  //     };
-  //     const data = await apiRequest('/admin/quiz/' + quizId + '/end', options);
-  //     if (data.error) {
-  //       setters.setErrorMessage(data.error)
-  //     } else {
-  //       setStartGameDialogOpen(false);
-  //       setEndGameDialogOpen(true);
-  //       setEndGameTitle(quizName);
-  //       setSessionCode(dataGet.active)
-  //       reRender(true);
-  //     }
-  //     // TODO
-  //   }
-  // }
-  // console.log (endGame)
+  const rerender = () => {
+    setRerenderScreen(!rerenderScreen);
+  }
+
+  React.useEffect(async () => {
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${getters.token}`
+      }
+    }
+    const data = await apiRequest('/admin/session/' + sessionId + '/status', options);
+    if (data.error) {
+      setters.setErrorMessage(data.error)
+      setters.setErrorOpen(true);
+    } else if (data.results.active) {
+      setActive(true);
+    } else {
+      setActive(false);
+      const res = await apiRequest('/admin/session/' + sessionId + '/status', options);
+      if (res.error) {
+        setters.setErrorMessage(data.error)
+        setters.setErrorOpen(true);
+      } else {
+        console.log('results')
+      }
+    }
+  }, [rerenderScreen]);
+  // displaySession();
+
+  const endGame = async () => {
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${getters.token}`
+      }
+    };
+    const data = await apiRequest('/admin/quiz/' + quizId + '/end', options);
+    if (data.error) {
+      setters.setErrorMessage(data.error)
+      setters.setErrorOpen(true);
+    } else {
+      rerender();
+      // console.log('ended')
+    }
+    // TODO
+  }
+
   return (
     <>
-      <Button
-      sx={{ marginTop: '30px' }}
-      variant="outlined"
-      onClick={() => console.log('te')}
-      >
-      Next Question
-      </Button>
-      <Button
-      sx={{ marginTop: '30px' }}
-      variant="outlined"
-      onClick={() => console.log('te')}
-      >
-      End Game
-      </Button>
+      <Grid container alignItems="center" direction="column" justifyContent="center">
+        {active && <Typography variant="h4">Game In Progress!</Typography>}
+        {active && <Button
+          sx={{ marginTop: '30px' }}
+          variant="outlined"
+          onClick={() => console.log('te')}
+        >
+        Next Question
+        </Button>}
+        {active && <Button
+          sx={{ marginTop: '30px' }}
+          variant="outlined"
+          onClick={endGame}
+        >
+        End Game
+        </Button>}
+        {/* <Grid item>
+        </Grid>
+        <Grid item>
+        </Grid>
+        <Grid item>
+        </Grid> */}
+      </Grid>
     </>
   )
 }

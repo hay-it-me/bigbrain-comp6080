@@ -21,7 +21,7 @@ import { Link } from 'react-router-dom';
 import { useContext, Context } from '../context';
 
 // Creates all the quiz cards on the dashboard
-export const QuizCard = ({ quiz, token, reRender }) => {
+export const QuizCard = ({ quiz, token, rerender }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [startGameDialogOpen, setStartGameDialogOpen] = React.useState(false);
@@ -64,7 +64,7 @@ export const QuizCard = ({ quiz, token, reRender }) => {
       // setErrorMessage(data.error);
       // setErrorOpen(true);
     } else {
-      reRender(true);
+      rerender(true);
     }
   }
 
@@ -80,6 +80,7 @@ export const QuizCard = ({ quiz, token, reRender }) => {
     console.log(data)
     if (data.error) {
       setters.setErrorMessage(data.error)
+      setters.setErrorOpen(true);
     } else {
       // setSessionCode('TODO')
       // console.log('getting')
@@ -97,7 +98,7 @@ export const QuizCard = ({ quiz, token, reRender }) => {
         setStartGameDialogOpen(true);
         setStartGameTitle(quizName);
         setSessionCode(dataGet.active)
-        reRender(true);
+        rerender(true);
       }
     }
   }
@@ -124,12 +125,13 @@ export const QuizCard = ({ quiz, token, reRender }) => {
       const data = await apiRequest('/admin/quiz/' + quizId + '/end', options);
       if (data.error) {
         setters.setErrorMessage(data.error)
+        setters.setErrorOpen(true);
       } else {
         setStartGameDialogOpen(false);
         setEndGameDialogOpen(true);
         setEndGameTitle(quizName);
         setSessionCode(dataGet.active)
-        reRender(true);
+        rerender(true);
       }
       // TODO
     }
