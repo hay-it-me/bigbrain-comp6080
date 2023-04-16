@@ -18,6 +18,7 @@ import { Quizzes } from './pages/Quizzes';
 import { EditGame } from './pages/EditGame';
 
 import ResponsiveAppBar from './components/Navbar';
+import { ViewGame } from './pages/ViewGame';
 
 function App () {
   const [token, setToken] = React.useState(localStorage.getItem('token'));
@@ -91,9 +92,10 @@ function App () {
             <ResponsiveAppBar setLogout={() => logoutUser()} />
             <Routes>
               <Route path="*" element={<Navigate replace to="/dashboard" />} />
-              <Route path="/dashboard" element={<Dashboard onLogout={() => logoutUser()} /> }/>
-              <Route path="/editgame/:gameId" element={<EditGame onLogout={() => logoutUser()} />} />
-              <Route path="/quizzes" element={<Quizzes onLogout={() => logoutUser()} /> }/>
+              <Route path="/dashboard" element={<Dashboard/> }/>
+              <Route path="/editgame/:gameId" element={<EditGame/>} />
+              <Route path="/quizzes" element={<Quizzes/> }/>
+              <Route path="/viewgame/:sessionId" element={<ViewGame/> }/>
             </Routes>
           </Context.Provider>
         </BrowserRouter>
