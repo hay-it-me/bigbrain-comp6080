@@ -6,13 +6,14 @@ import TextField from '@mui/material/TextField/TextField';
 import { apiRequest } from '../utilities/helpers';
 
 export const PlayGame = () => {
+  // TODO CHECK FOR CANT JOIJN IN PROGRESS GAMES
   const { getters, setters } = useContext(Context);
   const [playerId, setPlayerId] = React.useState('');
   const [sessionId, setSessionId] = React.useState('');
   const [name, setName] = React.useState('');
   const params = useParams();
   React.useEffect(() => {
-    if (params) {
+    if (params.sessionId) {
       setSessionId(params.sessionId);
       console.log(params.sessionId)
     }
