@@ -47,8 +47,8 @@ function ResponsiveAppBar ({ setLogout }) {
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="/dashboard"
+            component={Link}
+            to="/dashboard"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -103,8 +103,8 @@ function ResponsiveAppBar ({ setLogout }) {
           <Typography
             variant="h5"
             noWrap
-            component="a"
-            href="/dashboard"
+            component={Link}
+            to="/dashboard"
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },

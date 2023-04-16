@@ -19,9 +19,10 @@ import IconButton from '@mui/material/IconButton';
 import { apiRequest } from '../utilities/helpers'
 import { Link } from 'react-router-dom';
 import { useContext, Context } from '../context';
+// import config from '../config.json';
 
 // Creates all the quiz cards on the dashboard
-export const QuizCard = ({ quiz, token, rerender }) => {
+export const QuizCard = ({ quiz, rerender }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [startGameDialogOpen, setStartGameDialogOpen] = React.useState(false);
@@ -29,8 +30,25 @@ export const QuizCard = ({ quiz, token, rerender }) => {
   const [sessionCode, setSessionCode] = React.useState('');
   const [endGameDialogOpen, setEndGameDialogOpen] = React.useState(false);
   const [endGameTitle, setEndGameTitle] = React.useState('');
-
+  const [questions, setQuestions] = React.useState(null);
+  // let quiz = null;
   const { getters, setters } = useContext(Context);
+  React.useEffect(async () => {
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${getters.token}`
+      }
+    };
+    const data = await apiRequest('/admin/quiz/' + quiz.id, options)
+    if (data.error) {
+      setters.setErrorMessage(data.error);
+      setters.setErrorOpen(true);
+    } else {
+      setQuestions(data.questions)
+    }
+  }, [])
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -54,7 +72,7 @@ export const QuizCard = ({ quiz, token, rerender }) => {
       method: 'DELETE',
       headers: {
         'Content-type': 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${getters.token}`
       },
       body: JSON.stringify({})
     };
@@ -136,7 +154,6 @@ export const QuizCard = ({ quiz, token, rerender }) => {
       // TODO
     }
   }
-
   return (
     <>
       <Card key={quiz.id} sx={{ minWidth: 300, maxWidth: 350, margin: 2 }}>
@@ -195,12 +212,12 @@ export const QuizCard = ({ quiz, token, rerender }) => {
             >
             {quiz.owner}
             </Typography>
-            {quiz.questions
+            {questions
               ? <Typography
               variant="body1"
               color="text.secondary"
             >
-            {Object.keys(quiz.questions).length} Questions
+            {questions.length} Questions
             Time to Complete: PLACEHOLDER TXT
             </Typography>
               : <Typography
@@ -262,7 +279,7 @@ export const QuizCard = ({ quiz, token, rerender }) => {
           Session Code: {sessionCode}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => navigator.clipboard.writeText('TODO/' + sessionCode)}>Copy Session URL</Button>
+          <Button onClick={() => navigator.clipboard.writeText('http://localhost:3000/play/' + sessionCode)}>Copy Session URL</Button>
           <Button component={Link} to={'/viewgame/' + quiz.id + '/' + sessionCode}>View Game</Button>
           <Button onClick={() => endGame(quiz.id, quiz.name)}>End Game</Button>
           <Button onClick={() => setStartGameDialogOpen(false)}>Close</Button>

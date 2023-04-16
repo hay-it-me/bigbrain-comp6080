@@ -11,6 +11,8 @@ export const PlayGame = () => {
   const [playerId, setPlayerId] = React.useState('');
   const [sessionId, setSessionId] = React.useState('');
   const [name, setName] = React.useState('');
+  const [started, setStarted] = React.useState(false);
+  const [question, setQuestion] = React.useState(null);
   const params = useParams();
   React.useEffect(() => {
     if (params.sessionId) {
@@ -39,6 +41,53 @@ export const PlayGame = () => {
       setPlayerId(data.playerId);
     }
   }
+
+  React.useEffect(() => {
+    if (playerId && !started) {
+      const pollStart = setInterval(async () => {
+        const options = {
+          method: 'GET',
+          headers: {
+            accept: 'application/json',
+          }
+        };
+        const data = await apiRequest('/play/' + playerId + '/status', options);
+        if (data.error) {
+          setters.setErrorMessage(data.error)
+          setters.setErrorOpen(true);
+        } else {
+          if (data.started !== started) setStarted(data.started);
+        }
+      }, 200);
+      return () => {
+        clearInterval(pollStart);
+      }
+    }
+  }, [started, playerId]);
+
+  React.useEffect(() => {
+    if (started) {
+      const pollStart = setInterval(async () => {
+        const options = {
+          method: 'GET',
+          headers: {
+            accept: 'application/json',
+          }
+        };
+        const data = await apiRequest('/play/' + playerId + '/question', options);
+        if (data.error) {
+          setters.setErrorMessage(data.error)
+          setters.setErrorOpen(true);
+        } else {
+          console.log(question)
+          if (data.question !== question) setQuestion(data.question);
+        }
+      }, 200);
+      return () => {
+        clearInterval(pollStart);
+      }
+    }
+  }, [question, started]);
 
   return (
     <>
@@ -73,10 +122,15 @@ export const PlayGame = () => {
             </Button>
           </>
         }
-        {playerId &&
+        {playerId && !started &&
           <>
             <Typography variant="h4">Wating to start</Typography>
             <CircularProgress />
+          </>
+        }
+        {started &&
+          <>
+            a
           </>
         }
       </Grid>

@@ -132,7 +132,6 @@ export const Dashboard = () => {
           return <Grid item xs={12} sm={6} md={4} key={quiz.id}>
             <QuizCard
               quiz={quiz}
-              token={getters.token}
               rerender={() => rerenderQuizList()}
             />
           </Grid>

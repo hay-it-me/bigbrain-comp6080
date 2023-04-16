@@ -63,6 +63,24 @@ export const ViewGame = () => {
     // TODO
   }
 
+  const advanceGame = async () => {
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${getters.token}`
+      }
+    };
+    const data = await apiRequest('/admin/quiz/' + quizId + '/advance', options);
+    if (data.error) {
+      setters.setErrorMessage(data.error)
+      setters.setErrorOpen(true);
+    } else {
+      rerender();
+    }
+    // TODO
+  }
+
   return (
     <>
       <Grid container alignItems="center" direction="column" justifyContent="center">
@@ -70,7 +88,7 @@ export const ViewGame = () => {
         {active && <Button
           sx={{ marginTop: '30px' }}
           variant="outlined"
-          onClick={() => console.log('te')}
+          onClick={advanceGame}
         >
         Next Question
         </Button>}
