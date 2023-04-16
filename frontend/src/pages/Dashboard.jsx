@@ -9,7 +9,7 @@ import {
   Input,
   Dialog,
   DialogActions,
-  Grid
+  Grid,
 } from '@mui/material';
 import React from 'react';
 import ResponsiveAppBar from '../components/Navbar';
@@ -83,7 +83,6 @@ export const Dashboard = ({ onLogout }) => {
     setNewGameDialogOpen(false)
     setNewGameTitle('');
   }
-
   return (
     <>
       <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
@@ -133,7 +132,7 @@ export const Dashboard = ({ onLogout }) => {
           return <Grid item xs={12} sm={6} md={4} key={quiz}>
             <QuizCard
               quiz={quiz}
-              token={token}
+              token={getters.token}
               onDelete={() => rerenderQuizList()}
             />
           </Grid>

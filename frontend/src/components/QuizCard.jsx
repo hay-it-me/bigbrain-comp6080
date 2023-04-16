@@ -11,17 +11,26 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button
+  Button,
+  CardActions
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 import { apiRequest } from '../utilities/helpers'
 import { Link } from 'react-router-dom';
+import { useContext, Context } from '../context';
 
 // Creates all the quiz cards on the dashboard
 export const QuizCard = ({ quiz, token, onDelete }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [startGameDialogOpen, setStartGameDialogOpen] = React.useState(false);
+  const [startGameTitle, setStartGameTitle] = React.useState('');
+  const [startGameDialogCode, setStartGameDialogCode] = React.useState('');
+  const [endGameDialogOpen, setEndGameDialogOpen] = React.useState(false);
+  const [endGameTitle, setEndGameTitle] = React.useState('');
+
+  const { getters, setters } = useContext(Context);
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -56,6 +65,55 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
       // setErrorOpen(true);
     } else {
       onDelete(true);
+    }
+  }
+
+  const startGame = async (quizId, quizName) => {
+    setStartGameDialogOpen(true);
+    setStartGameTitle(quizName);
+    setStartGameDialogCode('TODO')
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${getters.token}`
+      }
+    };
+    const data = await apiRequest('/admin/quiz/' + quizId + '/start', options);
+    if (data.error) {
+      setters.setErrorMessage(data.error)
+    } else {
+      const optionsGet = {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Authorization: `Bearer ${getters.token}`
+        }
+      };
+      const dataGet = await apiRequest('/admin/quiz/' + quizId, optionsGet);
+      if (dataGet.error) {
+        setters.setErrorMessage(dataGet.error)
+      } else {
+        setStartGameDialogCode(dataGet.active)
+      }
+    }
+  }
+
+  const endGame = async (quizId, quizName) => {
+    setEndGameDialogOpen(true);
+    setEndGameTitle(quizName);
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${getters.token}`
+      }
+    };
+    const data = await apiRequest('/admin/quiz/' + quizId + '/end', options);
+    if (data.error) {
+      setters.setErrorMessage(data.error)
+    } else {
+      // TODO
     }
   }
 
@@ -133,6 +191,13 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
             </Typography>
             }
         </CardContent>
+        <CardActions>
+          <Button
+            onClick={() => startGame(quiz.id, quiz.name)}
+            size="small">
+            Start Game
+          </Button>
+        </CardActions>
       </Card>
       <Dialog
         open={deleteDialogOpen}
@@ -151,6 +216,35 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
         <DialogActions>
           <Button onClick={closeDeleteGameDialog}>Cancel</Button>
           <Button onClick={deleteGame}>Submit</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={startGameDialogOpen}
+      >
+        <DialogTitle>
+          {'Starting Game for quiz: ' + startGameTitle}
+        </DialogTitle>
+        <DialogContent>
+          Session Code: {startGameDialogCode}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => navigator.clipboard.writeText('TODO/' + startGameDialogCode)}>Copy Session URL</Button>
+          <Button onClick={() => endGame()}>End Game</Button>
+          <Button onClick={() => setStartGameDialogOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={endGameDialogOpen}
+      >
+        <DialogTitle>
+          {'Game ended for quiz: ' + endGameTitle}
+        </DialogTitle>
+        <DialogContent>
+        </DialogContent>
+        <DialogActions>
+          {/* <Button onClick={() => navigator.clipboard.writeText('TODO/' + startGameDialogCode)}>Copy Session URL</Button>
+          <Button onClick={() => console.log('end')}>End Game</Button>
+          <Button onClick={() => setStartGameDialogOpen(false)}>Close</Button> */}
         </DialogActions>
       </Dialog>
     </>

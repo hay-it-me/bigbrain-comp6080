@@ -17,21 +17,13 @@ import React from 'react';
 import { apiRequest, fileToDataUrl } from '../utilities/helpers';
 import { QuestionListItem } from '../components/QuestionListItem';
 import ResponsiveAppBar from '../components/Navbar';
-<<<<<<< HEAD
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useContext, Context } from '../context';
 
 export const EditGame = ({ onLogout }) => {
   // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
   // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
-  const [quizQuestions, setQuizQuestions] = React.useState(null);
-=======
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-
-export const EditGame = ({ onLogout, token }) => {
-  const [errorOpen, setErrorOpen] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
   const [quizQuestions, setQuizQuestions] = React.useState([]);
->>>>>>> dashboard
   const [quizName, setQuizName] = React.useState('');
   const [quizThumbnail, setQuizThumbnail] = React.useState('');
   const { getters, setters } = useContext(Context);
@@ -101,7 +93,7 @@ export const EditGame = ({ onLogout, token }) => {
       method: 'PUT',
       headers: {
         'Content-type': 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${getters.token}`
       },
       body: JSON.stringify({
         questions: quizQuestions,
@@ -112,8 +104,8 @@ export const EditGame = ({ onLogout, token }) => {
     const data = await apiRequest('/admin/quiz/' + gameId, options)
     console.log('/admin/quiz/' + gameId);
     if (data.error) {
-      setErrorMessage(data.error);
-      setErrorOpen(true);
+      setters.setErrorMessage(data.error);
+      setters.setErrorOpen(true);
     }
   }, [quizQuestions, quizName, quizThumbnail])
 
