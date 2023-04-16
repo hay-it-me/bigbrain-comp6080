@@ -17,6 +17,8 @@ import { Dashboard } from './pages/Dashboard';
 import { Quizzes } from './pages/Quizzes';
 import { EditGame } from './pages/EditGame';
 
+import ResponsiveAppBar from './components/Navbar';
+
 function App () {
   const [token, setToken] = React.useState(localStorage.getItem('token'));
   // Error handling
@@ -79,13 +81,14 @@ function App () {
   } else {
     return (
       <>
-      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
-        <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {errorMessage}
-        </Alert>
-      </Snackbar>
+        <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+          <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
+            {errorMessage}
+          </Alert>
+        </Snackbar>
         <BrowserRouter>
           <Context.Provider value={{ getters, setters }}>
+            <ResponsiveAppBar setLogout={() => logoutUser()} />
             <Routes>
               <Route path="*" element={<Navigate replace to="/dashboard" />} />
               <Route path="/dashboard" element={<Dashboard onLogout={() => logoutUser()} /> }/>

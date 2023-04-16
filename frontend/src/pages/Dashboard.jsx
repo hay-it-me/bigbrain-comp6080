@@ -12,12 +12,12 @@ import {
   Grid,
 } from '@mui/material';
 import React from 'react';
-import ResponsiveAppBar from '../components/Navbar';
+// import ResponsiveAppBar from '../components/Navbar';
 import { QuizCard } from '../components/QuizCard';
 import { apiRequest } from '../utilities/helpers'
 import { useContext, Context } from '../context';
 
-export const Dashboard = ({ onLogout }) => {
+export const Dashboard = () => {
   const [quizzes, setQuizzes] = React.useState([]);
   const [newGameDialogOpen, setNewGameDialogOpen] = React.useState(false);
   const [newGameTitle, setNewGameTitle] = React.useState('');
@@ -25,9 +25,9 @@ export const Dashboard = ({ onLogout }) => {
 
   const { getters, setters } = useContext(Context);
 
-  function logoutUser () {
-    onLogout(true);
-  }
+  // function logoutUser () {
+  //   onLogout(true);
+  // }
 
   const rerenderQuizList = () => {
     setRerenderQuizzes(!rerenderQuizzes);
@@ -90,7 +90,7 @@ export const Dashboard = ({ onLogout }) => {
           {getters.errorMessage}
         </Alert>
       </Snackbar>
-      <ResponsiveAppBar setLogout={() => logoutUser()} />
+      {/* <ResponsiveAppBar setLogout={() => logoutUser()} /> */}
       <Button
         sx={{ marginTop: '30px' }}
         variant="outlined"
@@ -129,11 +129,11 @@ export const Dashboard = ({ onLogout }) => {
         spacing={2}
       >
         {quizzes.map((quiz) => {
-          return <Grid item xs={12} sm={6} md={4} key={quiz}>
+          return <Grid item xs={12} sm={6} md={4} key={quiz.id}>
             <QuizCard
               quiz={quiz}
               token={getters.token}
-              onDelete={() => rerenderQuizList()}
+              reRender={() => rerenderQuizList()}
             />
           </Grid>
         })}

@@ -1,14 +1,14 @@
 import React from 'react';
-import ResponsiveAppBar from '../components/Navbar';
+// import ResponsiveAppBar from '../components/Navbar';
 
-export const Quizzes = ({ onLogout }) => {
-  function logoutUser () {
-    onLogout(true);
-  }
+export const Quizzes = () => {
+  // function logoutUser () {
+  //   onLogout(true);
+  // }
 
   return (
     <>
-      <ResponsiveAppBar setLogout={() => logoutUser()} />
+      {/* <ResponsiveAppBar setLogout={() => logoutUser()} /> */}
       List of quizzes here
     </>
   )

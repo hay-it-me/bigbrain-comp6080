@@ -16,11 +16,11 @@ import { useParams, Link } from 'react-router-dom';
 import React from 'react';
 import { apiRequest, fileToDataUrl } from '../utilities/helpers';
 import { QuestionListItem } from '../components/QuestionListItem';
-import ResponsiveAppBar from '../components/Navbar';
+// import ResponsiveAppBar from '../components/Navbar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useContext, Context } from '../context';
 
-export const EditGame = ({ onLogout }) => {
+export const EditGame = () => {
   // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
   // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
   const [quizQuestions, setQuizQuestions] = React.useState([]);
@@ -30,9 +30,9 @@ export const EditGame = ({ onLogout }) => {
 
   const { gameId } = useParams();
 
-  function logoutUser () {
-    onLogout(true);
-  }
+  // function logoutUser () {
+  //   onLogout(true);
+  // }
 
   const handleErrorClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -195,7 +195,7 @@ export const EditGame = ({ onLogout }) => {
           {getters.errorMessage}
         </Alert>
       </Snackbar>
-      <ResponsiveAppBar setLogout={() => logoutUser()} />
+      {/* <ResponsiveAppBar setLogout={() => logoutUser()} /> */}
       <FlexDiv>
         <Button
           component={Link}

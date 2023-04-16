@@ -21,7 +21,7 @@ import { Link } from 'react-router-dom';
 import { useContext, Context } from '../context';
 
 // Creates all the quiz cards on the dashboard
-export const QuizCard = ({ quiz, token, onDelete }) => {
+export const QuizCard = ({ quiz, token, reRender }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [startGameDialogOpen, setStartGameDialogOpen] = React.useState(false);
@@ -64,14 +64,11 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
       // setErrorMessage(data.error);
       // setErrorOpen(true);
     } else {
-      onDelete(true);
+      reRender(true);
     }
   }
 
   const startGame = async (quizId, quizName) => {
-    setStartGameDialogOpen(true);
-    setStartGameTitle(quizName);
-    setStartGameDialogCode('TODO')
     const options = {
       method: 'POST',
       headers: {
@@ -80,9 +77,12 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
       }
     };
     const data = await apiRequest('/admin/quiz/' + quizId + '/start', options);
+    console.log(data)
     if (data.error) {
       setters.setErrorMessage(data.error)
     } else {
+      // setStartGameDialogCode('TODO')
+      console.log('getting')
       const optionsGet = {
         method: 'GET',
         headers: {
@@ -94,14 +94,15 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
       if (dataGet.error) {
         setters.setErrorMessage(dataGet.error)
       } else {
+        setStartGameDialogOpen(true);
+        setStartGameTitle(quizName);
         setStartGameDialogCode(dataGet.active)
+        reRender(true);
       }
     }
   }
 
   const endGame = async (quizId, quizName) => {
-    setEndGameDialogOpen(true);
-    setEndGameTitle(quizName);
     const options = {
       method: 'POST',
       headers: {
@@ -113,6 +114,10 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
     if (data.error) {
       setters.setErrorMessage(data.error)
     } else {
+      setStartGameDialogOpen(false);
+      setEndGameDialogOpen(true);
+      setEndGameTitle(quizName);
+      reRender(true);
       // TODO
     }
   }
@@ -192,11 +197,16 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
             }
         </CardContent>
         <CardActions>
-          <Button
+          {!quiz.active && <Button
             onClick={() => startGame(quiz.id, quiz.name)}
             size="small">
             Start Game
-          </Button>
+          </Button>}
+          {quiz.active && <Button
+            onClick={() => endGame(quiz.id, quiz.name)}
+            size="small">
+            End Game
+          </Button>}
         </CardActions>
       </Card>
       <Dialog
@@ -229,7 +239,7 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => navigator.clipboard.writeText('TODO/' + startGameDialogCode)}>Copy Session URL</Button>
-          <Button onClick={() => endGame()}>End Game</Button>
+          <Button onClick={() => endGame(quiz.id, quiz.name)}>End Game</Button>
           <Button onClick={() => setStartGameDialogOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
@@ -240,8 +250,12 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
           {'Game ended for quiz: ' + endGameTitle}
         </DialogTitle>
         <DialogContent>
+          Would you like to view the results?
         </DialogContent>
         <DialogActions>
+          <Button onClick={() => console.log('yes')}>Yes</Button>
+          <Button onClick={() => setEndGameDialogOpen(false)}>No</Button>
+
           {/* <Button onClick={() => navigator.clipboard.writeText('TODO/' + startGameDialogCode)}>Copy Session URL</Button>
           <Button onClick={() => console.log('end')}>End Game</Button>
           <Button onClick={() => setStartGameDialogOpen(false)}>Close</Button> */}
