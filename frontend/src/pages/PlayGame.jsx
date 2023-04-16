@@ -130,7 +130,7 @@ export const PlayGame = () => {
         }
         {started &&
           <>
-            a
+            <Typography variant="h3">{question.question}</Typography>
           </>
         }
       </Grid>
