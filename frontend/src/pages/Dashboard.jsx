@@ -1,11 +1,6 @@
 import {
   Snackbar,
   Alert,
-  CardMedia,
-  CardHeader,
-  Card,
-  CardContent,
-  Typography,
   Button,
   DialogTitle,
   DialogContent,
@@ -14,12 +9,11 @@ import {
   Input,
   Dialog,
   DialogActions,
-  Box
+  Grid
 } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import IconButton from '@mui/material/IconButton';
 import React from 'react';
 import ResponsiveAppBar from '../components/Navbar';
+import { QuizCard } from '../components/QuizCard';
 import { apiRequest } from '../utilities/helpers'
 
 export const Dashboard = ({ onLogout, token }) => {
@@ -32,6 +26,10 @@ export const Dashboard = ({ onLogout, token }) => {
 
   function logoutUser () {
     onLogout(true);
+  }
+
+  const rerenderQuizList = () => {
+    setRerenderQuizzes(!rerenderQuizzes);
   }
 
   const handleErrorClose = (event, reason) => {
@@ -72,9 +70,10 @@ export const Dashboard = ({ onLogout, token }) => {
     };
     const data = await apiRequest('/admin/quiz/new', options);
     if (data.error) {
-      setErrorMessage(data.error)
+      setErrorMessage(data.error);
+      setErrorOpen(true);
     } else {
-      setRerenderQuizzes(true);
+      rerenderQuizList();
     }
     closeNewGameDialog();
   };
@@ -83,52 +82,6 @@ export const Dashboard = ({ onLogout, token }) => {
     setNewGameDialogOpen(false)
     setNewGameTitle('');
   }
-
-  // Creates all the quiz cards on the dashboard
-  const QuizCards = ({ quizzes }) => {
-    return quizzes.map((quiz) => (
-      <Card key={quiz.id} sx={{ minWidth: 300, maxWidth: 350, margin: 2 }}>
-        <CardHeader
-          action={
-            <IconButton aria-label="settings">
-              <MoreVertIcon />
-            </IconButton>
-          }
-          title={quiz.name}
-          subheader={new Date(quiz.createdAt).toLocaleDateString('en-US')}
-        />
-        <CardMedia
-          component="img"
-          height="200"
-          image={quiz.thumbnail}
-          alt={quiz.name + ' thumbnail'}
-        />
-        <CardContent>
-          <Typography
-            variant="body1"
-            color="text.secondary"
-          >
-            {quiz.owner}
-          </Typography>
-          {quiz.questions
-            ? <Typography
-            variant="body1"
-            color="text.secondary"
-          >
-            {Object.keys(quiz.questions).length} Questions
-            Time to Complete: PLACEHOLDER TXT
-            </Typography>
-            : <Typography
-            variant="body1"
-            color="text.secondary"
-          >
-            No Questions
-            </Typography>
-          }
-        </CardContent>
-      </Card>
-    ))
-  };
 
   return (
     <>
@@ -170,11 +123,21 @@ export const Dashboard = ({ onLogout, token }) => {
           <Button onClick={createNewGame}>Submit</Button>
         </DialogActions>
       </Dialog>
-      <Box sx={{ display: 'flex' }}>
-        <QuizCards
-          quizzes={quizzes}
-        />
-      </Box>
+      <Grid
+        container
+        justifyContent="center"
+        spacing={2}
+      >
+        {quizzes.map((quiz) => {
+          return <Grid item xs={12} sm={6} md={4} key={quiz}>
+            <QuizCard
+              quiz={quiz}
+              token={token}
+              onDelete={() => rerenderQuizList()}
+            />
+          </Grid>
+        })}
+      </Grid>
     </>
   )
 }
