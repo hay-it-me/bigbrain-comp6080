@@ -44,20 +44,20 @@ function App () {
   };
 
   async function logoutUser () {
-    setToken(null);
-    localStorage.removeItem('token');
     const options = {
       method: 'POST',
       headers: {
-        'Content-type': 'application/json',
+        accept: 'application/json',
         Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({})
+      }
     };
-    const data = await apiRequest('admin/auth/logout', options);
+    const data = await apiRequest('/admin/auth/logout', options);
     if (data.error) {
       setErrorMessage(data.error);
       setErrorOpen(true);
+    } else {
+      localStorage.removeItem('token');
+      setToken(null);
     }
   }
 
@@ -90,8 +90,7 @@ function App () {
                 <Route path="/viewgame/:quizId/:sessionId" element={<ViewGame/> }/>
               </>
             }
-            {
-              !token &&
+            {!token &&
               <>
                 <Route path="*" element={<Navigate replace to="/login" />} />
                 <Route path="/login" element={<Login onSuccess={setTokenToLocalStorage} />} />
@@ -104,32 +103,6 @@ function App () {
       </BrowserRouter>
     </>
   );
-
-  // if (!token) {
-
-  // } else {
-  //   return (
-  //     <>
-  //       <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
-  //         <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-  //           {errorMessage}
-  //         </Alert>
-  //       </Snackbar>
-  //       <BrowserRouter>
-  //         <Context.Provider value={{ getters, setters }}>
-  //           <ResponsiveAppBar setLogout={() => logoutUser()} />
-  //           <Routes>
-  //             <Route path="*" element={<Navigate replace to="/dashboard" />} />
-  //             <Route path="/dashboard" element={<Dashboard/> }/>
-  //             <Route path="/editgame/:gameId" element={<EditGame/>} />
-  //             <Route path="/quizzes" element={<Quizzes/> }/>
-  //             <Route path="/viewgame/:quizId/:sessionId" element={<ViewGame/> }/>
-  //           </Routes>
-  //         </Context.Provider>
-  //       </BrowserRouter>
-  //     </>
-  //   );
-  // }
 }
 
 export default App;
