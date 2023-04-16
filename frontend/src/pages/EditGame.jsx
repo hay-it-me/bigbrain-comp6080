@@ -3,23 +3,35 @@ import {
   Snackbar,
   Alert,
   FormControl,
-  InputLabel,
   Input,
   Box,
   Button,
   styled,
-  Typography
+  Typography,
+  Divider,
+  Skeleton,
+  List
 } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import React from 'react';
-import { apiRequest, fileToDataUrl } from '../utilities/helpers'
+import { apiRequest, fileToDataUrl } from '../utilities/helpers';
+import { QuestionListItem } from '../components/QuestionListItem';
 import ResponsiveAppBar from '../components/Navbar';
+<<<<<<< HEAD
 import { useContext, Context } from '../context';
 
 export const EditGame = ({ onLogout }) => {
   // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
   // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
   const [quizQuestions, setQuizQuestions] = React.useState(null);
+=======
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
+export const EditGame = ({ onLogout, token }) => {
+  const [errorOpen, setErrorOpen] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
+  const [quizQuestions, setQuizQuestions] = React.useState([]);
+>>>>>>> dashboard
   const [quizName, setQuizName] = React.useState('');
   const [quizThumbnail, setQuizThumbnail] = React.useState('');
   const { getters, setters } = useContext(Context);
@@ -50,6 +62,20 @@ export const EditGame = ({ onLogout }) => {
     }
   };
 
+  const addNewQuestion = () => {
+    setQuizQuestions(quizQuestions =>
+      [...quizQuestions, {
+        question: 'Sample Question',
+        type: 'single',
+        answers: [],
+        timelimit: 0,
+        points: 0,
+        videourl: '',
+        photosrc: ''
+      }]
+    );
+  }
+
   React.useEffect(async () => {
     const options = {
       method: 'GET',
@@ -70,6 +96,33 @@ export const EditGame = ({ onLogout }) => {
     }
   }, []);
 
+  React.useEffect(async () => {
+    const options = {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        questions: quizQuestions,
+        name: quizName,
+        thumbnail: quizThumbnail
+      })
+    };
+    const data = await apiRequest('/admin/quiz/' + gameId, options)
+    console.log('/admin/quiz/' + gameId);
+    if (data.error) {
+      setErrorMessage(data.error);
+      setErrorOpen(true);
+    }
+  }, [quizQuestions, quizName, quizThumbnail])
+
+  const FlexDiv = styled('div')({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  })
+
   const HiddenFileInput = styled('input')({
     display: 'none',
   });
@@ -83,42 +136,35 @@ export const EditGame = ({ onLogout }) => {
   const QuizForm = () => {
     return (
       <>
-        <Typography variant="h6">
-          Quiz Details
-        </Typography>
-        <FormControl variant="standard" >
-          <InputLabel htmlFor="game-name">Name</InputLabel>
-          <Input
-            id="game-name"
-            type="text"
-            value={quizName}
-            onChange={(event) => {
-              setQuizName(event.target.value);
-            }}
-          />
-        </FormControl>
-        <Box>
-          <Box>
-            <HiddenFileInput
-              accept="image/*"
-              id="contained-button-file"
-              type="file"
-              onChange={handleFileChange}
-            />
-            <label htmlFor="contained-button-file">
-              <Button variant="contained" component="span" sx={{ marginTop: '30px' }}>
-                Upload Thumbnail
-              </Button>
-            </label>
-          </Box>
+        <FlexDiv>
           {quizThumbnail && (
-          <>
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <BorderedImage src={quizThumbnail} alt={quizName + ' Quiz Thumbnail'} />
-            </Box>
-          </>
+            <>
+              <Box>
+                <BorderedImage src={quizThumbnail} alt={quizName + ' Quiz Thumbnail'} />
+              </Box>
+            </>
           )}
-        </Box>
+          {!quizThumbnail && (
+            <>
+              <Box>
+                <Skeleton variant="rectangular" height={100} width={100}/>
+              </Box>
+            </>
+          )}
+        </FlexDiv>
+        <FlexDiv>
+          <HiddenFileInput
+            accept="image/*"
+            id="hidden-button-file"
+            type="file"
+            onChange={handleFileChange}
+          />
+          <label htmlFor="hidden-button-file">
+            <Button variant="contained" component="span" sx={{ marginTop: '30px' }}>
+              Upload Thumbnail
+            </Button>
+          </label>
+        </FlexDiv>
       </>
     )
   };
@@ -127,9 +173,25 @@ export const EditGame = ({ onLogout }) => {
     console.log(quizQuestions);
     return (
       <>
-        <Typography variant="h6">
+      <Box>
+        <Typography variant="h6" sx={{ marginTop: '20px' }}>
           Questions
         </Typography>
+        <Divider />
+        <List>
+          {quizQuestions && quizQuestions.map((question, index) => {
+            return (
+              <QuestionListItem
+              key={index}
+              question={question}
+            />
+            )
+          })}
+        </List>
+        <Button variant="contained" onClick={addNewQuestion}>
+          Add New Question
+        </Button>
+      </Box>
       </>
     )
   };
@@ -142,11 +204,37 @@ export const EditGame = ({ onLogout }) => {
         </Alert>
       </Snackbar>
       <ResponsiveAppBar setLogout={() => logoutUser()} />
+      <FlexDiv>
+        <Button
+          component={Link}
+          to="/dashboard"
+        >
+          <ArrowBackIcon />
+        </Button>
+        <FormControl variant="standard" >
+          <Input
+            id="game-name"
+            type="text"
+            value={quizName}
+            autoFocus
+            onChange={(event) => {
+              setQuizName(event.target.value);
+            }}
+            sx={{
+              fontSize: '2rem',
+              marginBottom: '10px'
+            }}
+          />
+        </FormControl>
+      </FlexDiv>
+      <Divider sx={{ mb: 2 }}/>
       <Grid container>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          item
+          xs={12}
+          justifyContent="center"
+        >
           <QuizForm />
-        </Grid>
-        <Grid item xs={12} sm={6}>
           <QuizQuestions />
         </Grid>
       </Grid>
