@@ -9,15 +9,14 @@ import { Context, init } from './context';
 // Helpers
 import { apiRequest } from './utilities/helpers'
 // Components
-
+import ResponsiveAppBar from './components/Navbar';
 // Pages
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { Quizzes } from './pages/Quizzes';
 import { EditGame } from './pages/EditGame';
-
-import ResponsiveAppBar from './components/Navbar';
+import { EditQuestion } from './pages/EditQuestion';
 import { ViewGame } from './pages/ViewGame';
 import { PlayGame } from './pages/PlayGame';
 
@@ -86,6 +85,7 @@ function App () {
                 <Route path="*" element={<Navigate replace to="/dashboard" />} />
                 <Route path="/dashboard" element={<Dashboard/> }/>
                 <Route path="/editgame/:gameId" element={<EditGame/>} />
+                <Route path="/editgame/:gameId/editquestion/:questionId" element={<EditQuestion/>} />
                 <Route path="/quizzes" element={<Quizzes/> }/>
                 <Route path="/viewgame/:quizId/:sessionId" element={<ViewGame/> }/>
               </>

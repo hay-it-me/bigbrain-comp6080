@@ -68,6 +68,14 @@ export const EditGame = () => {
     );
   }
 
+  const deleteQuestion = (index) => {
+    setQuizQuestions(quizQuestions =>
+      quizQuestions.filter((_, i) =>
+        i !== index
+      )
+    )
+  }
+
   React.useEffect(async () => {
     const options = {
       method: 'GET',
@@ -176,6 +184,9 @@ export const EditGame = () => {
               <QuestionListItem
               key={index}
               question={question}
+              questionId={index}
+              gameId={gameId}
+              onDelete={() => deleteQuestion(index)}
             />
             )
           })}

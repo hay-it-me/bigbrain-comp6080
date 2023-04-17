@@ -9,10 +9,15 @@ import {
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Link } from 'react-router-dom';
 
 import React from 'react';
 
-export const QuestionListItem = ({ question }) => {
+export const QuestionListItem = ({ question, questionId, gameId, onDelete }) => {
+  const deleteQuestion = () => {
+    onDelete(true);
+  };
+
   return (
     <React.Fragment>
       <ListItem>
@@ -26,10 +31,10 @@ export const QuestionListItem = ({ question }) => {
           secondary={Object.keys(question.answers).length + ' Choices'}
         />
         <ListItemSecondaryAction>
-          <IconButton aria-label="edit">
+          <IconButton aria-label="edit" component={ Link } to={'/editgame/' + gameId + '/editquestion/' + questionId }>
             <EditIcon />
           </IconButton>
-          <IconButton edge="end" aria-label="delete">
+          <IconButton edge="end" aria-label="delete" onClick={deleteQuestion}>
             <DeleteIcon />
           </IconButton>
         </ListItemSecondaryAction>
