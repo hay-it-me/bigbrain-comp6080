@@ -11,7 +11,7 @@ export const ViewGame = () => {
 
   const { quizId, sessionId } = useParams();
 
-  console.log(getters, setters, sessionId, quizId);
+  // console.log(getters, setters, sessionId, quizId);
 
   const rerender = () => {
     setRerenderScreen(!rerenderScreen);

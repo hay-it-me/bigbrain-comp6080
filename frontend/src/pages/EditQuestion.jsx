@@ -23,8 +23,7 @@ export const EditQuestion = () => {
   const [quizQuestion, setQuizQuestion] = React.useState({
     question: '',
     type: '',
-    answers: [''],
-    correct: [],
+    answers: [],
     timelimit: 0,
     points: 0,
     videourl: '',

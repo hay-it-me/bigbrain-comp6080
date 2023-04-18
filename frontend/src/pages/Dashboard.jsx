@@ -129,7 +129,7 @@ export const Dashboard = () => {
         spacing={2}
       >
         {quizzes.map((quiz) => {
-          return <Grid item xs={12} sm={6} md={4} key={quiz.id}>
+          return <Grid item xs={12} sm={6} md={4} key={'quiz-' + quiz.id}>
             <QuizCard
               quiz={quiz}
               rerender={() => rerenderQuizList()}

@@ -59,8 +59,12 @@ export const EditGame = () => {
       [...quizQuestions, {
         question: 'Sample Question',
         type: 'single',
-        answers: [],
-        correct: [],
+        answers: [
+          {
+            answer: 'Sample Answer 1',
+            correct: true
+          }
+        ],
         timelimit: 0,
         points: 0,
         videourl: '',
