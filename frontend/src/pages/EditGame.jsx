@@ -60,7 +60,6 @@ export const EditGame = () => {
         question: 'Sample Question',
         type: 'single',
         answers: [],
-        correct: [],
         timelimit: 0,
         points: 0,
         videourl: '',
