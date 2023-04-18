@@ -29,6 +29,7 @@ export const PlayGame = () => {
   const [allowed, setAllowed] = React.useState(true);
   const [selected, setSelected] = React.useState([]);
   const [correct, setCorrect] = React.useState([]);
+  const [results, setResults] = React.useState([]);
   const params = useParams();
   React.useEffect(() => {
     if (params.sessionId) {
@@ -152,6 +153,7 @@ export const PlayGame = () => {
         setters.setErrorMessage(data.error)
         setters.setErrorOpen(true);
       } else {
+        setResults(data);
         // console.log(data.answerIds);
         // setCorrect(data.answerIds)
       }
@@ -349,6 +351,32 @@ export const PlayGame = () => {
         {ended &&
           <>
             <Typography variant="h3">Results</Typography>
+            {results.map((result, index) => {
+              const answerRes = result.correct ? 'correct!' : 'incorrect.'
+              return (
+                <>
+                  <Typography variant='h4'>{'Question ' + (index + 1) }</Typography>
+                  <Grid container justifyContent="center" spacing={2} columns={12}>
+                    <Grid item justifyContent="center" xs={5}>
+                      <Typography variant='h5' sx={{ textAlign: 'center' }} >You Answered:</Typography>
+                      {result.answerIds.map((answer) => {
+                        return (
+                          <>
+                            <Typography sx={{ textAlign: 'center', overflowWrap: 'break-word' }}>{answer}</Typography>
+                          </>
+                        )
+                      })}
+                      <Typography variant='h6' sx={{ textAlign: 'center' }} >This was {answerRes}</Typography>
+
+                    </Grid>
+                    {/* <Grid item justifyContent="center" xs={5}>
+                      <Typography variant='h5'>Your Answers</Typography>
+                      <Typography sx={{ textAlign: 'center', overflowWrap: 'break-word' }}>b</Typography>
+                    </Grid> */}
+                  </Grid>
+                </>
+              )
+            })}
           </>
         }
       </Grid>
