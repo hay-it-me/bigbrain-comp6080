@@ -99,6 +99,7 @@ export const ViewGame = () => {
         >
         End Game
         </Button>}
+        {/* INSERT RESULTS STUFF FOR PLAYERS */}
         {/* <Grid item>
         </Grid>
         <Grid item>
