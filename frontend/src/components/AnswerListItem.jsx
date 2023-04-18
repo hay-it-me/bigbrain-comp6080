@@ -30,7 +30,6 @@ export const AnswerListItem = ({ id, answerData, onDelete, onSetChecked }) => {
               checked={answerData.correct}
               tabIndex={-1}
               disableRipple
-              inputProps={{ 'aria-labelled-by': id }}
             />
           </ListItemIcon>
           <ListItemText
