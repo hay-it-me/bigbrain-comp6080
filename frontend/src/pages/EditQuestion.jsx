@@ -242,6 +242,9 @@ export const EditQuestion = () => {
         <Typography variant="h6" sx={{ marginTop: '20px' }}>
           Answers
         </Typography>
+        <Typography variant="caption">
+          Select the correct answers
+        </Typography>
         <Divider />
         <List >
           {quizQuestion.answers && quizQuestion.answers.map((answer, index) => {

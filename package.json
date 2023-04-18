@@ -1,0 +1,14 @@
+{
+  "name": "bigbrain",
+  "description": "1. Background & Motivation 2. The Task (Frontend) 3. The Support (Backend) 4. Constraints & Assumptions 5. Teamwork 6. Marking Criteria 7. Originality of Work 8. Submission 9. Late Submission Policy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^12.10.0"
+  }
+}

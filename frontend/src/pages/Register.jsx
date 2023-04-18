@@ -78,6 +78,7 @@ export const Register = ({ onSuccess }) => {
             <InputLabel htmlFor="register-name">Name</InputLabel>
             <Input
               id="register-name"
+              name="name"
               value={name}
               type="text"
               onChange={(event) => {
@@ -91,6 +92,7 @@ export const Register = ({ onSuccess }) => {
             <InputLabel htmlFor="register-email">Email</InputLabel>
             <Input
               id="register-email"
+              name="email"
               value={email}
               type="email"
               onChange={(event) => {
@@ -104,6 +106,7 @@ export const Register = ({ onSuccess }) => {
             <InputLabel htmlFor="register-password">Password</InputLabel>
             <Input
               id="register-password"
+              name="password"
               type="password"
               value={password}
               onChange={(event) => {
@@ -117,6 +120,7 @@ export const Register = ({ onSuccess }) => {
             <InputLabel htmlFor="register-password-confirm">Confirm Password</InputLabel>
             <Input
               id="register-password-confirm"
+              name="confirm-password"
               type="password"
               value={confirmPassword}
               onChange={(event) => {
@@ -125,7 +129,7 @@ export const Register = ({ onSuccess }) => {
             />
           </FormControl>
         </div>
-        <Button sx={{ mt: 1, mb: 1 }} onClick={registerUser}>Register Account</Button>
+        <Button sx={{ mt: 1, mb: 1 }} id="register-button" onClick={registerUser}>Register Account</Button>
         <div>
           <Typography variant="subtitle2" >
             Already have an account? Log in <Link to="/login">here</Link>

@@ -94,6 +94,7 @@ export const Dashboard = () => {
       <Button
         // sx={{ marginTop: '30px' }}
         variant="outlined"
+        name="new-game-button"
         onClick={() => setNewGameDialogOpen(true)}
       >
         Create a New Game
@@ -110,6 +111,7 @@ export const Dashboard = () => {
             <InputLabel htmlFor="new-game-name">Name</InputLabel>
             <Input
               id="new-game-name"
+              name="new-game"
               type="text"
               value={newGameTitle}
               onChange={(event) => {
