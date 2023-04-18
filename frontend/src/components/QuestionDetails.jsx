@@ -1,15 +1,14 @@
-import { Box, FormControl, Input, InputLabel } from '@mui/material'
+import {
+  Box,
+  FormControl,
+  Input,
+  InputLabel
+} from '@mui/material'
 import React from 'react'
 
-export const QuestionDetails = ({ question, setQuestion }) => {
-  // const [question, setQuestion] = React.useState('');
+export const QuestionDetails = ({ question, setQuestion, points, setPoints, time, setTime }) => {
   return (
   <React.Fragment>
-    {/* <FlexDiv>
-      <Typography variant="h4" sx={{ marginTop: '20px', marginBottom: '20px' }}>
-        { quiz.name + ' Question ' + (Number(questionId) + 1) }
-      </Typography>
-    </FlexDiv> */}
     <Box>
         <FormControl variant="standard" fullWidth sx={{ mt: 2 }}>
         <InputLabel htmlFor="question-question">Question</InputLabel>
@@ -23,19 +22,32 @@ export const QuestionDetails = ({ question, setQuestion }) => {
       />
         </FormControl>
     </Box>
-    {/* <FlexDiv>
-      <div>
-        <InputLabel id='select-type-label'>Question Type</InputLabel>
-        <Select
-          labelId='select-type-label'
-          value={quizQuestion.type}
-          onChange={updateType}
-        >
-          <MenuItem value='single'>Single Answer</MenuItem>
-          <MenuItem value='multiple'>Multiple Answer</MenuItem>
-        </Select>
-      </div>
-    </FlexDiv> */}
+    <Box sx={{ textAlign: 'center' }}>
+        <FormControl variant="standard" sx={{ mt: 2 }}>
+        <InputLabel htmlFor="points-question">Points</InputLabel>
+        <Input
+          id='points-question'
+          value={points}
+          type='number'
+          onChange={(event) => {
+            setPoints(event.target.value)
+          }}
+      />
+        </FormControl>
+    </Box>
+    <Box sx={{ textAlign: 'center', marginBottom: '20px' }}>
+        <FormControl variant="standard" sx={{ mt: 2 }}>
+        <InputLabel htmlFor="time-question">Time Limit</InputLabel>
+        <Input
+          id='time-question'
+          value={time}
+          type='number'
+          onChange={(event) => {
+            setTime(event.target.value)
+          }}
+      />
+        </FormControl>
+    </Box>
   </React.Fragment>
   )
 }

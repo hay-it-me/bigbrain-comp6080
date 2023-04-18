@@ -1,8 +1,8 @@
 import {
   Button,
   InputLabel,
-  // MenuItem,
-  // Select,
+  MenuItem,
+  Select,
   styled,
   FormControl,
   Input,
@@ -11,20 +11,20 @@ import {
   DialogActions,
   DialogTitle,
   Box,
-  // Typography,
-  // Divider,
-  // List,
+  Typography,
+  Divider,
+  List,
   Grid
 } from '@mui/material';
 // import { AnswerInput } from '../components/AnswerInput';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import React from 'react';
 import { useContext, Context } from '../context';
 import { apiRequest } from '../utilities/helpers';
-// import { AnswerListItem } from '../components/AnswerListItem'
+import { AnswerListItem } from '../components/AnswerListItem'
 import { QuestionDetails } from '../components/QuestionDetails';
 
-export const EditQuestion = () => {
+export const EditQuestion = ({ onSuccess }) => {
   const [quiz, setQuiz] = React.useState({});
   const [quizQuestion, setQuizQuestion] = React.useState({
     question: '',
@@ -36,6 +36,10 @@ export const EditQuestion = () => {
     photosrc: ''
   });
   const [question, setQuestion] = React.useState('');
+  const [points, setPoints] = React.useState(0);
+  const [time, setTime] = React.useState(0);
+  const [video, setVideo] = React.useState('');
+  const [img, setImg] = React.useState('');
 
   const [addDialogOpen, setAddDialogOpen] = React.useState(false);
   const [dialogAnswer, setDialogAnswer] = React.useState('');
@@ -62,6 +66,10 @@ export const EditQuestion = () => {
       setQuiz(data);
       setQuizQuestion(data.questions[questionId]);
       setQuestion(data.questions[questionId].question);
+      setPoints(parseInt(data.questions[questionId].points));
+      setTime(parseInt(data.questions[questionId].timelimit));
+      setVideo(data.questions[questionId].videourl);
+      setImg(data.questions[questionId].photosrc);
     }
     console.log(quiz);
     console.log(question);
@@ -74,79 +82,104 @@ export const EditQuestion = () => {
     justifyContent: 'center'
   })
   console.log(FlexDiv)
-  // const openAddDialog = () => {
-  //   setAddDialogOpen(true);
-  // }
+
+  const openAddDialog = () => {
+    setAddDialogOpen(true);
+  }
 
   const closeAddDialog = () => {
     setAddDialogOpen(false);
     setDialogAnswer('');
   }
 
-  // const updateType = (event) => {
-  //   setQuizQuestion({ ...quizQuestion, type: event.target.value });
-  // };
+  const updateType = (event) => {
+    setQuizQuestion({ ...quizQuestion, type: event.target.value });
+  };
 
   const addNewAnswer = () => {
     setQuizQuestion((quizQuestion) => ({
       ...quizQuestion,
       answers: [...quizQuestion.answers, { answer: dialogAnswer, correct: false }]
     }));
-    // setCorrect([...correct, false])
     closeAddDialog();
     console.log(quizQuestion);
   };
 
-  // const deleteAnswer = (index) => {
-  //   setQuizQuestion(quizQuestion => (
-  //     {
-  //       ...quizQuestion,
-  //       answers:
-  //         quizQuestion.answers.filter((_, i) =>
-  //           i !== index
-  //         )
-  //     }
-  //   ));
-  //   // setCorrect(correct => {
-  //   //   correct.filter((_, i) =>
-  //   //     i !== index
-  //   //   )
-  //   // });
-  //   console.log(quizQuestion);
-  // };
+  const deleteAnswer = (index) => {
+    setQuizQuestion(quizQuestion => (
+      {
+        ...quizQuestion,
+        answers:
+          quizQuestion.answers.filter((_, i) =>
+            i !== index
+          )
+      }
+    ));
+    console.log(quizQuestion);
+  };
 
-  // const updateAnswer = (value, index) => {
-  //   console.log(index);
-  //   setQuizQuestion((prevQuizQuestion) => ({
-  //     ...prevQuizQuestion,
-  //     answers: prevQuizQuestion.answers.map((answer, i) =>
-  //       i === index ? { ...answer, answer: value } : answer
-  //     )
-  //   }));
-  //   console.log(index)
-  //   console.log(quizQuestion)
-  // }
+  async function saveQuestion () {
+    const correctAnswers = quizQuestion.answers.filter((answer) =>
+      answer.correct === true
+    ).length
 
-  // const updateChecked = (value, index) => {
-  //   setQuizQuestion(quizQuestion => {
-  //     console.log(quizQuestion)
-  //     const newAnswer = Array.from(quizQuestion.answers);
-  //     console.log(newAnswer);
-  //     newAnswer[index].correct = value;
-  //     return { ...quizQuestion, answers: newAnswer };
-  //   })
-  // }
+    if (quizQuestion.type === 'single' && correctAnswers !== 1) {
+      setters.setErrorMessage('Single choice must have 1 correct answer');
+      setters.setErrorOpen(true);
+      return;
+    } else if (quizQuestion.type === 'multiple' && correctAnswers < 1) {
+      setters.setErrorMessage('Multiple choice must have at least 1 correct answer');
+      setters.setErrorOpen(true);
+      return;
+    }
 
-  // const updateCorrect = (value, index) => {
-  //   setQuizQuestion(quizQuestion => {
-  //     console.log(quizQuestion)
-  //     const newAnswer = Array.from(quizQuestion.answers);
-  //     console.log('newanswer' + newAnswer);
-  //     newAnswer[index].correct = value;
-  //     return { ...quizQuestion, answers: newAnswer };
-  //   })
-  //   console.log(quizQuestion)
-  // }
+    const questions = Array.from(quiz.questions);
+    const newQuestion = ({
+      question,
+      type: quizQuestion.type,
+      answers: quizQuestion.answers,
+      timelimit: time,
+      points,
+      videourl: video,
+      photosrc: img
+    })
+    questions[questionId] = newQuestion;
+
+    const newBody = {
+      name: quiz.name,
+      thumbnail: quiz.thumbnail,
+      questions
+    }
+    console.log(newBody);
+
+    const options = {
+      method: 'PUT',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${getters.token}`
+      },
+      body: JSON.stringify(newBody)
+    };
+    const data = await apiRequest('/admin/quiz/' + gameId, options)
+
+    if (data.error) {
+      setters.setErrorMessage(data.error);
+      setters.setErrorOpen(true);
+    } else {
+      console.log(options);
+      onSuccess(gameId);
+    }
+  }
+
+  const updateChecked = (value, index) => {
+    setQuizQuestion(quizQuestion => {
+      console.log(quizQuestion)
+      const newAnswer = Array.from(quizQuestion.answers);
+      console.log(newAnswer);
+      newAnswer[index].correct = value;
+      return { ...quizQuestion, answers: newAnswer };
+    })
+  }
 
   // const AnswerInput = ({ answerData, index }) => {
   //   return (
@@ -205,34 +238,34 @@ export const EditQuestion = () => {
   //   )
   // }
 
-  // const QuizAnswers = () => {
-  //   return (
-  //     <>
-  //     <Box sx={{ maxWidth: '500px', width: '100%' }}>
-  //       <Typography variant="h6" sx={{ marginTop: '20px' }}>
-  //         Answers
-  //       </Typography>
-  //       <Divider />
-  //       <List >
-  //         {quizQuestion.answers && quizQuestion.answers.map((answer, index) => {
-  //           return (
-  //             <AnswerListItem
-  //             key={index}
-  //             id={index}
-  //             answerData={answer}
-  //             onSetChecked={(value) => updateChecked(value, index)}
-  //             onDelete={() => deleteAnswer(index)}
-  //           />
-  //           )
-  //         })}
-  //       </List>
-  //       <Button onClick={openAddDialog}>
-  //         Add Option
-  //       </Button>
-  //     </Box>
-  //     </>
-  //   )
-  // };
+  const QuizAnswers = () => {
+    return (
+      <>
+      <Box sx={{ maxWidth: '500px', width: '100%' }}>
+        <Typography variant="h6" sx={{ marginTop: '20px' }}>
+          Answers
+        </Typography>
+        <Divider />
+        <List >
+          {quizQuestion.answers && quizQuestion.answers.map((answer, index) => {
+            return (
+              <AnswerListItem
+              key={index}
+              id={index}
+              answerData={answer}
+              onSetChecked={(value) => updateChecked(value, index)}
+              onDelete={() => deleteAnswer(index)}
+            />
+            )
+          })}
+        </List>
+        <Button onClick={openAddDialog}>
+          Add Option
+        </Button>
+      </Box>
+      </>
+    )
+  };
 
   return (
     <>
@@ -244,13 +277,51 @@ export const EditQuestion = () => {
       >
         <Grid item xs={12} sm={6}>
           <Box sx={{ mt: 5, minWidth: 275 }}>
-            <QuestionDetails question={question} setQuestion={setQuestion}/>
+          <FlexDiv>
+            <Typography variant="h4" sx={{ marginBottom: '20px' }}>
+              { quiz.name}
+            </Typography>
+          </FlexDiv>
+          <FlexDiv>
+            <Typography variant="h6" sx={{ marginBottom: '20px' }}>
+              { 'Question ' + (Number(questionId) + 1) }
+            </Typography>
+          </FlexDiv>
+            <QuestionDetails
+              question={question}
+              setQuestion={setQuestion}
+              points={points}
+              setPoints={setPoints}
+              time={time}
+              setTime={setTime}
+            />
           </Box>
         </Grid>
       </Grid>
-      {/* <FlexDiv>
+      <FlexDiv>
+        <div>
+          <InputLabel id='select-type-label'>Question Type</InputLabel>
+          <Select
+            labelId='select-type-label'
+            value={quizQuestion.type}
+            onChange={updateType}
+          >
+            <MenuItem value='single'>Single Answer</MenuItem>
+            <MenuItem value='multiple'>Multiple Answer</MenuItem>
+          </Select>
+        </div>
+      </FlexDiv>
+      <FlexDiv>
         <QuizAnswers />
-      </FlexDiv> */}
+      </FlexDiv>
+      <FlexDiv sx={{ paddingTop: '50px' }}>
+        <Button variant="contained" sx={{ marginRight: '10px' }} onClick={() => saveQuestion()}>
+          Save Question
+        </Button>
+        <Button variant="contained" component={Link} to={'/editgame/' + gameId} sx={{ marginLeft: '10px' }}>
+          Cancel
+        </Button>
+      </FlexDiv>
       <Dialog
         open={addDialogOpen}
         onClose={closeAddDialog}
