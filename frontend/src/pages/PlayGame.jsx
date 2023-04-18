@@ -13,6 +13,7 @@ export const PlayGame = () => {
   const [sessionId, setSessionId] = React.useState('');
   const [name, setName] = React.useState('');
   const [started, setStarted] = React.useState(false);
+  const [ended, setEnded] = React.useState(false);
   const [question, setQuestion] = React.useState({
     question: '',
     type: '',
@@ -67,8 +68,13 @@ export const PlayGame = () => {
         };
         const data = await apiRequest('/play/' + playerId + '/status', options);
         if (data.error) {
-          setters.setErrorMessage(data.error)
-          setters.setErrorOpen(true);
+          if (data.error === 'Session ID is not an active session') {
+            setStarted(true)
+            setEnded(true);
+          } else {
+            setters.setErrorMessage(data.error)
+            setters.setErrorOpen(true);
+          }
         } else {
           if (data.started !== started) setStarted(data.started);
         }
@@ -80,7 +86,7 @@ export const PlayGame = () => {
   }, [started, playerId]);
   // Question where
   React.useEffect(() => {
-    if (started) {
+    if (started && !ended) {
       const pollStart = setInterval(async () => {
         const options = {
           method: 'GET',
@@ -90,15 +96,21 @@ export const PlayGame = () => {
         };
         const data = await apiRequest('/play/' + playerId + '/question', options);
         if (data.error) {
-          setters.setErrorMessage(data.error)
-          setters.setErrorOpen(true);
+          if (data.error === 'Session ID is not an active session') {
+            setEnded(true);
+          } else {
+            setters.setErrorMessage(data.error)
+            setters.setErrorOpen(true);
+          }
+          // console.log(data, setEnded)
         } else {
           // console.log(question)
-          if (String(data.question) !== String(question)) {
+          if (data.question !== question) {
             console.log(data.question !== question)
             setCorrect([]);
             setQuestion(data.question);
             setAllowed(true);
+            setEnded(false);
           }
         }
       }, 200);
@@ -126,6 +138,25 @@ export const PlayGame = () => {
       }
     }
   }, [allowed]);
+
+  React.useEffect(async () => {
+    if (ended) {
+      const options = {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+        }
+      };
+      const data = await apiRequest('/play/' + playerId + '/results', options);
+      if (data.error) {
+        setters.setErrorMessage(data.error)
+        setters.setErrorOpen(true);
+      } else {
+        // console.log(data.answerIds);
+        // setCorrect(data.answerIds)
+      }
+    }
+  }, [ended]);
 
   const selectSingleAnswer = async (answer, disabled) => {
     console.log(answer);
@@ -229,20 +260,19 @@ export const PlayGame = () => {
 
   function CheckboxComponent ({ color, checked, onClick, label }) {
     return (
-      <Grid container alignItems="center" onClick={onClick} >
+      <Box onClick={onClick} sx={{ backgroundColor: color + '.dark' }}>
         {/* Wrap the Checkbox in a FormControlLabel */}
         <FormControlLabel
           control={
             <Checkbox
               checked={checked}
               onChange={onClick}
-              color={color}
               // disabled={disabled}
               />
             }
           label={label}
         />
-      </Grid>
+      </Box>
     );
   }
 
@@ -285,7 +315,7 @@ export const PlayGame = () => {
             <CircularProgress />
           </>
         }
-        {started &&
+        {started && !ended &&
           <>
             <Typography variant="h3">{question.question}</Typography>
             {(question.videourl !== '' || question.photosrc !== '') &&
@@ -306,7 +336,7 @@ export const PlayGame = () => {
               console.log(correct, answer.answer, correct.includes(answer.answer))
               if (question.type === 'single') {
                 return (
-                  <Button color={correct.includes(answer.answer) ? 'success' : 'primary'} key={'answer-' + index} onClick={() => selectSingleAnswer(answer.answer, !allowed)} >{answer.answer}</Button>
+                  <Button variant='outlined' color={correct.includes(answer.answer) ? 'success' : 'primary'} key={'answer-' + index} onClick={() => selectSingleAnswer(answer.answer, !allowed)} >{answer.answer}</Button>
                 )
               } else {
                 return (
@@ -314,6 +344,11 @@ export const PlayGame = () => {
                 )
               }
             })}
+          </>
+        }
+        {ended &&
+          <>
+            <Typography variant="h3">Results</Typography>
           </>
         }
       </Grid>
