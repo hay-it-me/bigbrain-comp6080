@@ -23,8 +23,8 @@ export const Register = ({ onSuccess }) => {
   const [name, setName] = React.useState('');
   // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
   // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
-  const { getters, setters } = useContext(Context);
-  console.log(getters)
+  const { setters } = useContext(Context);
+  // console.log(getters)
   async function registerUser () {
     if (password !== confirmPassword) {
       setters.setErrorMessage('Passwords do not match');

@@ -8,7 +8,6 @@ import ReactPlayer from 'react-player';
 // import TimeComponent from '../components/TimeComponent';
 
 export const PlayGame = () => {
-  // TODO CHECK FOR CANT JOIJN IN PROGRESS GAMES
   const { setters } = useContext(Context);
   const [playerId, setPlayerId] = React.useState('');
   const [sessionId, setSessionId] = React.useState('');
@@ -28,6 +27,7 @@ export const PlayGame = () => {
   // const [progress, setProgress] = React.useState(0);
   const [allowed, setAllowed] = React.useState(true);
   const [selected, setSelected] = React.useState([]);
+  const [correct, setCorrect] = React.useState([]);
   const params = useParams();
   React.useEffect(() => {
     if (params.sessionId) {
@@ -94,7 +94,9 @@ export const PlayGame = () => {
           setters.setErrorOpen(true);
         } else {
           // console.log(question)
-          if (data.question !== question) {
+          if (String(data.question) !== String(question)) {
+            console.log(data.question !== question)
+            setCorrect([]);
             setQuestion(data.question);
             setAllowed(true);
           }
@@ -106,12 +108,51 @@ export const PlayGame = () => {
     }
   }, [question, started]);
 
-  const selectSingleAnswer = (event) => {
-    console.log(event);
+  React.useEffect(async () => {
+    if (!allowed) {
+      const options = {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+        }
+      };
+      const data = await apiRequest('/play/' + playerId + '/answer', options);
+      if (data.error) {
+        setters.setErrorMessage(data.error)
+        setters.setErrorOpen(true);
+      } else {
+        // console.log(data.answerIds);
+        setCorrect(data.answerIds)
+      }
+    }
+  }, [allowed]);
+
+  const selectSingleAnswer = async (answer, disabled) => {
+    console.log(answer);
+    if (!disabled) {
+      const options = {
+        method: 'PUT',
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          answerIds: [answer]
+        })
+      };
+      const data = await apiRequest('/play/' + playerId + '/answer', options);
+      if (data.error) {
+        setters.setErrorMessage(data.error)
+        setters.setErrorOpen(true);
+      } else {
+        console.log('success')
+      }
+    }
     // TODO ANSWER QN
-    setAllowed(false);
+    // setAllowed(false);
   }
-  const selectMultiAnswer = (answer, disabled) => {
+  const selectMultiAnswer = async (answer, disabled) => {
+    console.log(selected)
     console.log(answer, disabled);
     if (!disabled) {
       if (selected.includes(answer)) {
@@ -120,16 +161,38 @@ export const PlayGame = () => {
             i !== selected.indexOf(answer)
           )
         )
+        console.log('did1')
+        console.log(selected)
       } else {
         setSelected([...selected, answer])
+        console.log('did2')
+        console.log(selected)
       }
       console.log(selected);
       // TODO ANSWER QN
     }
   }
-  const submitSelection = () => {
-    console.log(selected)
+  const sendMultiAnswer = async () => {
+    const options = {
+      method: 'PUT',
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        answerIds: selected
+      })
+    };
+    const data = await apiRequest('/play/' + playerId + '/answer', options);
+    if (data.error) {
+      setters.setErrorMessage(data.error)
+      setters.setErrorOpen(true);
+    } else {
+      console.log('success mult')
+    }
   }
+  React.useEffect(sendMultiAnswer, [selected]);
+
   function TimeComponent ({ question }) {
     const now = new Date();
     const secs = (now - Date.parse(question.isoTimeLastQuestionStarted)) / 1000;
@@ -139,7 +202,7 @@ export const PlayGame = () => {
     if (timeRemaining <= 0) {
       timeRemaining = 0;
       progress = 0;
-      setAllowed(false);
+      if (allowed) setAllowed(false);
     }
 
     return (
@@ -164,7 +227,7 @@ export const PlayGame = () => {
     )
   }
 
-  function CheckboxComponent ({ checked, onClick, label, disabled }) {
+  function CheckboxComponent ({ color, checked, onClick, label }) {
     return (
       <Grid container alignItems="center" onClick={onClick} >
         {/* Wrap the Checkbox in a FormControlLabel */}
@@ -173,8 +236,8 @@ export const PlayGame = () => {
             <Checkbox
               checked={checked}
               onChange={onClick}
-              color="primary"
-              disabled={disabled}
+              color={color}
+              // disabled={disabled}
               />
             }
           label={label}
@@ -240,17 +303,17 @@ export const PlayGame = () => {
 
             <TimeComponent question={question}/>
             {question.answers.map((answer, index) => {
+              console.log(correct, answer.answer, correct.includes(answer.answer))
               if (question.type === 'single') {
                 return (
-                  <Button key={'answer-' + index} onClick={selectSingleAnswer} disabled={!allowed} >{answer.answer}</Button>
+                  <Button color={correct.includes(answer.answer) ? 'success' : 'primary'} key={'answer-' + index} onClick={() => selectSingleAnswer(answer.answer, !allowed)} >{answer.answer}</Button>
                 )
               } else {
                 return (
-                  <CheckboxComponent disabled={!allowed} checked={selected.includes(answer.answer)} key={'answer-' + index} onClick={() => selectMultiAnswer(answer.answer, !allowed)} label={answer.answer} />
+                  <CheckboxComponent color={correct.includes(answer.answer) ? 'success' : 'primary'} checked={selected.includes(answer.answer)} key={'answer-' + index} onClick={() => selectMultiAnswer(answer.answer, !allowed)} label={answer.answer} />
                 )
               }
             })}
-            {question.type === 'multiple' && <Button onClick={submitSelection}>Submit Selection</Button>}
           </>
         }
       </Grid>
