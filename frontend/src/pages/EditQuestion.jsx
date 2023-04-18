@@ -118,6 +118,7 @@ export const EditQuestion = () => {
   };
 
   async function saveQuestion () {
+    console.log('SV')
     const correctAnswers = quizQuestion.answers.filter((answer) =>
       answer.correct === true
     ).length
@@ -150,8 +151,8 @@ export const EditQuestion = () => {
       method: 'PUT',
       headers: {
         accept: 'application/json',
-        Authorization: `Bearer ${getters.token}`,
-        'Content-type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getters.token}`
       },
       body: JSON.stringify({
         name: quiz.name,
