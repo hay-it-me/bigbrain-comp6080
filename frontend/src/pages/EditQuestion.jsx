@@ -22,6 +22,7 @@ import React from 'react';
 import { useContext, Context } from '../context';
 import { apiRequest } from '../utilities/helpers';
 // import { AnswerListItem } from '../components/AnswerListItem'
+import { QuestionDetails } from '../components/QuestionDetails';
 
 export const EditQuestion = () => {
   const [quiz, setQuiz] = React.useState({});
@@ -72,7 +73,7 @@ export const EditQuestion = () => {
     alignItems: 'center',
     justifyContent: 'center'
   })
-
+  console.log(FlexDiv)
   // const openAddDialog = () => {
   //   setAddDialogOpen(true);
   // }
@@ -204,46 +205,6 @@ export const EditQuestion = () => {
   //   )
   // }
 
-  const QuestionDetails = () => {
-    return (
-    <React.Fragment>
-      {/* <FlexDiv>
-        <Typography variant="h4" sx={{ marginTop: '20px', marginBottom: '20px' }}>
-          { quiz.name + ' Question ' + (Number(questionId) + 1) }
-        </Typography>
-      </FlexDiv> */}
-      <FlexDiv>
-        <Box>
-          <FormControl variant="standard" fullWidth sx={{ mt: 2 }}>
-            <InputLabel htmlFor="question-question">Question</InputLabel>
-            <Input
-              id='question-question'
-              value={question}
-              type='text'
-              onChange={(event) => {
-                setQuestion(event.target.value)
-              }}
-            />
-          </FormControl>
-        </Box>
-      </FlexDiv>
-      {/* <FlexDiv>
-        <div>
-          <InputLabel id='select-type-label'>Question Type</InputLabel>
-          <Select
-            labelId='select-type-label'
-            value={quizQuestion.type}
-            onChange={updateType}
-          >
-            <MenuItem value='single'>Single Answer</MenuItem>
-            <MenuItem value='multiple'>Multiple Answer</MenuItem>
-          </Select>
-        </div>
-      </FlexDiv> */}
-    </React.Fragment>
-    )
-  }
-
   // const QuizAnswers = () => {
   //   return (
   //     <>
@@ -283,7 +244,7 @@ export const EditQuestion = () => {
       >
         <Grid item xs={12} sm={6}>
           <Box sx={{ mt: 5, minWidth: 275 }}>
-            <QuestionDetails />
+            <QuestionDetails question={question} setQuestion={setQuestion}/>
           </Box>
         </Grid>
       </Grid>
