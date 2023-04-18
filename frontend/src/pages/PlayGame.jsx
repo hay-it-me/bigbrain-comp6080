@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import TextField from '@mui/material/TextField/TextField';
 import { apiRequest } from '../utilities/helpers';
 import ReactPlayer from 'react-player';
+// import lodash from 'lodash';
 // import TimeComponent from '../components/TimeComponent';
 
 export const PlayGame = () => {
@@ -30,6 +31,7 @@ export const PlayGame = () => {
   const [selected, setSelected] = React.useState([]);
   const [correct, setCorrect] = React.useState([]);
   const [results, setResults] = React.useState([]);
+  const _ = require('lodash');
   const params = useParams();
   React.useEffect(() => {
     if (params.sessionId) {
@@ -70,6 +72,7 @@ export const PlayGame = () => {
         const data = await apiRequest('/play/' + playerId + '/status', options);
         if (data.error) {
           if (data.error === 'Session ID is not an active session') {
+            console.log('ended')
             setStarted(true)
             setEnded(true);
           } else {
@@ -98,6 +101,7 @@ export const PlayGame = () => {
         const data = await apiRequest('/play/' + playerId + '/question', options);
         if (data.error) {
           if (data.error === 'Session ID is not an active session') {
+            console.log('ended')
             setEnded(true);
           } else {
             setters.setErrorMessage(data.error)
@@ -106,9 +110,9 @@ export const PlayGame = () => {
           // console.log(data, setEnded)
         } else {
           // console.log(question)
-          if (data.question !== question) {
-            console.log(data.question !== question)
-            setCorrect([]);
+          // console.log(data.question !== question)
+          if (!_.isEqual(data.question, question)) {
+            setCorrect([])
             setQuestion(data.question);
             setAllowed(true);
             setEnded(false);
@@ -119,8 +123,8 @@ export const PlayGame = () => {
         clearInterval(pollStart);
       }
     }
-  }, [question, started]);
-
+  }, [started, question, ended]);
+  // Getting correct answer
   React.useEffect(async () => {
     if (!allowed) {
       const options = {
@@ -131,8 +135,13 @@ export const PlayGame = () => {
       };
       const data = await apiRequest('/play/' + playerId + '/answer', options);
       if (data.error) {
-        setters.setErrorMessage(data.error)
-        setters.setErrorOpen(true);
+        if (data.error === 'Session ID is not an active session') {
+          console.log('ended')
+          setEnded(true);
+        } else {
+          setters.setErrorMessage(data.error)
+          setters.setErrorOpen(true);
+        }
       } else {
         // console.log(data.answerIds);
         setCorrect(data.answerIds)
@@ -227,16 +236,27 @@ export const PlayGame = () => {
   React.useEffect(sendMultiAnswer, [selected]);
 
   function TimeComponent ({ question }) {
-    const now = new Date();
-    const secs = (now - Date.parse(question.isoTimeLastQuestionStarted)) / 1000;
-    // console.log(secs)
-    let timeRemaining = question.timelimit - secs;
-    let progress = 100 * (timeRemaining / question.timelimit);
-    if (timeRemaining <= 0) {
-      timeRemaining = 0;
-      progress = 0;
-      if (allowed) setAllowed(false);
-    }
+    const [progress, setProgress] = React.useState(0);
+    const [timeRemaining, setTimeRemaining] = React.useState(0);
+
+    React.useEffect(() => {
+      const timer = setInterval(() => {
+        const now = new Date();
+        const secs = (now - Date.parse(question.isoTimeLastQuestionStarted)) / 1000;
+        // console.log(secs)
+        setTimeRemaining(question.timelimit - secs);
+        setProgress(100 * (question.timelimit - secs / question.timelimit));
+        if (question.timelimit - secs <= 0) {
+          console.log('hah')
+          setTimeRemaining(0);
+          setProgress(0);
+          if (allowed) setAllowed(false);
+        }
+      }, 150);
+      return () => {
+        clearInterval(timer);
+      }
+    }, [question, timeRemaining, progress])
 
     return (
         <Box sx={{ position: 'relative', display: 'inline-flex' }}>
@@ -338,11 +358,11 @@ export const PlayGame = () => {
               console.log(correct, answer.answer, correct.includes(answer.answer))
               if (question.type === 'single') {
                 return (
-                  <Button variant='outlined' color={correct.includes(answer.answer) ? 'success' : 'primary'} key={'answer-' + index} onClick={() => selectSingleAnswer(answer.answer, !allowed)} >{answer.answer}</Button>
+                  <Button variant='outlined' color={correct.includes(answer.answer) ? 'success' : 'primary'} key={question + index} onClick={() => selectSingleAnswer(answer.answer, !allowed)} >{answer.answer}</Button>
                 )
               } else {
                 return (
-                  <CheckboxComponent color={correct.includes(answer.answer) ? 'success' : 'primary'} checked={selected.includes(answer.answer)} key={'answer-' + index} onClick={() => selectMultiAnswer(answer.answer, !allowed)} label={answer.answer} />
+                  <CheckboxComponent color={correct.includes(answer.answer) ? 'success' : 'primary'} checked={selected.includes(answer.answer)} key={question + index} onClick={() => selectMultiAnswer(answer.answer, !allowed)} label={answer.answer} />
                 )
               }
             })}
