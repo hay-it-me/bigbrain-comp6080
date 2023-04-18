@@ -17,14 +17,14 @@ import {
   Grid
 } from '@mui/material';
 // import { AnswerInput } from '../components/AnswerInput';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import React from 'react';
 import { useContext, Context } from '../context';
 import { apiRequest } from '../utilities/helpers';
 import { AnswerListItem } from '../components/AnswerListItem'
 import { QuestionDetails } from '../components/QuestionDetails';
 
-export const EditQuestion = ({ onSuccess }) => {
+export const EditQuestion = () => {
   const [quiz, setQuiz] = React.useState({});
   const [quizQuestion, setQuizQuestion] = React.useState({
     question: '',
@@ -40,12 +40,14 @@ export const EditQuestion = ({ onSuccess }) => {
   const [time, setTime] = React.useState(0);
   const [video, setVideo] = React.useState('');
   const [img, setImg] = React.useState('');
+  const [mediaChoice, setMediaChoice] = React.useState('img')
 
   const [addDialogOpen, setAddDialogOpen] = React.useState(false);
   const [dialogAnswer, setDialogAnswer] = React.useState('');
 
   const { getters, setters } = useContext(Context);
   const { gameId, questionId } = useParams();
+  const navigate = useNavigate();
 
   React.useEffect(async () => {
     const options = {
@@ -70,27 +72,26 @@ export const EditQuestion = ({ onSuccess }) => {
       setTime(parseInt(data.questions[questionId].timelimit));
       setVideo(data.questions[questionId].videourl);
       setImg(data.questions[questionId].photosrc);
+      if (data.questions[questionId].videourl) {
+        setMediaChoice('video');
+      }
     }
-    console.log(quiz);
-    console.log(question);
-    console.log(quizQuestion);
   }, []);
 
   const FlexDiv = styled('div')({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
-  })
-  console.log(FlexDiv)
+  });
 
   const openAddDialog = () => {
     setAddDialogOpen(true);
-  }
+  };
 
   const closeAddDialog = () => {
     setAddDialogOpen(false);
     setDialogAnswer('');
-  }
+  };
 
   const updateType = (event) => {
     setQuizQuestion({ ...quizQuestion, type: event.target.value });
@@ -102,7 +103,6 @@ export const EditQuestion = ({ onSuccess }) => {
       answers: [...quizQuestion.answers, { answer: dialogAnswer, correct: false }]
     }));
     closeAddDialog();
-    console.log(quizQuestion);
   };
 
   const deleteAnswer = (index) => {
@@ -115,7 +115,6 @@ export const EditQuestion = ({ onSuccess }) => {
           )
       }
     ));
-    console.log(quizQuestion);
   };
 
   async function saveQuestion () {
@@ -133,32 +132,32 @@ export const EditQuestion = ({ onSuccess }) => {
       return;
     }
 
-    const questions = Array.from(quiz.questions);
+    const videoUrl = mediaChoice === 'video' ? video : '';
+    const imgSrc = mediaChoice === 'img' ? img : '';
+
+    const questionList = Array.from(quiz.questions);
     const newQuestion = ({
       question,
       type: quizQuestion.type,
       answers: quizQuestion.answers,
       timelimit: time,
       points,
-      videourl: video,
-      photosrc: img
-    })
-    questions[questionId] = newQuestion;
-
-    const newBody = {
-      name: quiz.name,
-      thumbnail: quiz.thumbnail,
-      questions
-    }
-    console.log(newBody);
-
+      videourl: videoUrl,
+      photosrc: imgSrc
+    });
+    questionList[questionId] = newQuestion;
     const options = {
       method: 'PUT',
       headers: {
         accept: 'application/json',
-        Authorization: `Bearer ${getters.token}`
+        Authorization: `Bearer ${getters.token}`,
+        'Content-type': 'application/json'
       },
-      body: JSON.stringify(newBody)
+      body: JSON.stringify({
+        name: quiz.name,
+        thumbnail: quiz.thumbnail,
+        questions: questionList
+      })
     };
     const data = await apiRequest('/admin/quiz/' + gameId, options)
 
@@ -166,16 +165,13 @@ export const EditQuestion = ({ onSuccess }) => {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
     } else {
-      console.log(options);
-      onSuccess(gameId);
+      navigate('/editgame/' + gameId);
     }
   }
 
   const updateChecked = (value, index) => {
     setQuizQuestion(quizQuestion => {
-      console.log(quizQuestion)
       const newAnswer = Array.from(quizQuestion.answers);
-      console.log(newAnswer);
       newAnswer[index].correct = value;
       return { ...quizQuestion, answers: newAnswer };
     })
@@ -294,6 +290,12 @@ export const EditQuestion = ({ onSuccess }) => {
               setPoints={setPoints}
               time={time}
               setTime={setTime}
+              mediaChoice={mediaChoice}
+              setMediaChoice={setMediaChoice}
+              img={img}
+              setImg={setImg}
+              video={video}
+              setVideo={setVideo}
             />
           </Box>
         </Grid>

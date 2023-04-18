@@ -85,7 +85,7 @@ function App () {
                 <Route path="*" element={<Navigate replace to="/dashboard" />} />
                 <Route path="/dashboard" element={<Dashboard/> }/>
                 <Route path="/editgame/:gameId" element={<EditGame/>} />
-                <Route path="/editgame/:gameId/editquestion/:questionId" element={<EditQuestion onSuccess={(gameId) => <Navigate replace to={'/editgame/' + gameId} />}/>} />
+                <Route path="/editgame/:gameId/editquestion/:questionId" element={<EditQuestion onSuccess={() => console.log('success')} /> } />
                 <Route path="/quizzes" element={<Quizzes/> }/>
                 <Route path="/viewgame/:quizId/:sessionId" element={<ViewGame/> }/>
               </>
