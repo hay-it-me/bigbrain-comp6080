@@ -90,6 +90,9 @@ context('Happy Path - For Editing and Progressing Question/Answers', () => {
       cy.get('#add-new-question')
         .click();
 
+      // Helps flakiness
+      cy.wait(200);
+
       // Delete 2 extra questions
       cy.get('.MuiList-root')
         .children()
@@ -111,7 +114,8 @@ context('Happy Path - For Editing and Progressing Question/Answers', () => {
     })
 
     it('Updates the details of the question', () => {
-      const question = 'What is the most loved programming language?'
+      const question = 'What is the most loved programming language?';
+      const answers = ['Rust', 'C#', 'JSX'];
 
       cy.get('#question-question')
         .focus()
@@ -132,7 +136,97 @@ context('Happy Path - For Editing and Progressing Question/Answers', () => {
         .focus()
         .type('{backspace}20');
 
+      // Edit prepopulated answer
+      cy.get('#edit-button-answer-0')
+        .click();
+
+      cy.get('#edit-answer-input')
+        .focus()
+        .clear()
+
+      cy.get('#edit-answer-input') 
+        .focus()
+        .type(answers[0]);
+
+      cy.get('.MuiDialog-paper')
+        .children()
+        .contains('button', 'Submit')
+        .click();
+
+      cy.get('#add-new-answer')
+        .click();
       
+      cy.get('#add-answer-input') 
+        .focus()
+        .type(answers[1]);
+
+      cy.get('.MuiDialog-paper')
+        .children()
+        .contains('button', 'Submit')
+        .click();
+      
+      cy.get('#add-new-answer')
+        .click();
+      
+      cy.get('#add-answer-input') 
+        .focus()
+        .type(answers[2]);
+      
+      cy.get('.MuiDialog-paper')
+        .children()
+        .contains('button', 'Submit')
+        .click();
+
+      cy.get('input[type="file"]')
+        .selectFile("cypress/test-assets/lab.png", {force:true});
+
+      cy.get('#question-image').should('be.visible');
+      
+      cy.contains('button', 'Save Question')
+        .click()
+
+      cy.url().should('include', 'editgame');
+    })
+
+    it('Starts the game', () => {
+      const newGame = 'Programming';
+      
+      cy.get('#back-button')
+        .click({force:true});
+      
+      cy.url().should('include','dashboard');
+
+      cy.contains('.MuiCardHeader-root', newGame).should('be.visible');
+
+      cy.contains('.MuiCardHeader-root', newGame)
+        .siblings()
+        .contains('button', 'Start Game')
+        .click()
+    })
+
+    it('View and progresses the game', () => {
+      
+      cy.get('.MuiDialog-paper')
+        .children()
+        .contains('a', 'View Game')
+        .click();
+
+      cy.url().should('include', 'viewgame')
+
+      cy.contains('button', 'Next Question')
+        .click()
+      
+      // cy.document.should('include', 'Results')
+    })
+
+    it('Logout', () => {
+      cy.get('#settings-button')
+        .click()
+  
+      cy.contains('li', 'Logout')
+      .click()
+  
+      cy.url().should('include', 'login');
     })
 
   })
