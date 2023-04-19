@@ -161,7 +161,7 @@ export const ViewGame = () => {
       End Game
       </Button>}
       {!active &&
-        <Grid item xs={12} sm={6} md={4} style={{ textAlign: 'center' }}>
+        <Grid item xs={12} sm={6} md={8} style={{ textAlign: 'center' }}>
           <Typography variant="h3">Results</Typography><br />
           <Typography variant="h4">Top Players</Typography>
           <TableContainer component={Paper}>

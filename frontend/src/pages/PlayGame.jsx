@@ -116,9 +116,10 @@ export const PlayGame = () => {
             setQuestion(data.question);
             setAllowed(true);
             setEnded(false);
+            setSelected([]);
           }
         }
-      }, 200);
+      }, 150);
       return () => {
         clearInterval(pollStart);
       }
@@ -215,22 +216,24 @@ export const PlayGame = () => {
     }
   }
   const sendMultiAnswer = async () => {
-    const options = {
-      method: 'PUT',
-      headers: {
-        accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        answerIds: selected
-      })
-    };
-    const data = await apiRequest('/play/' + playerId + '/answer', options);
-    if (data.error) {
-      setters.setErrorMessage(data.error)
-      setters.setErrorOpen(true);
-    } else {
-      console.log('success mult')
+    if (selected.length > 0) {
+      const options = {
+        method: 'PUT',
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          answerIds: selected
+        })
+      };
+      const data = await apiRequest('/play/' + playerId + '/answer', options);
+      if (data.error) {
+        setters.setErrorMessage(data.error)
+        setters.setErrorOpen(true);
+      } else {
+        console.log('success mult')
+      }
     }
   }
   React.useEffect(sendMultiAnswer, [selected]);
@@ -252,7 +255,7 @@ export const PlayGame = () => {
           setProgress(0);
           if (allowed) setAllowed(false);
         }
-      }, 150);
+      }, 200);
       return () => {
         clearInterval(timer);
       }
@@ -282,7 +285,7 @@ export const PlayGame = () => {
 
   function CheckboxComponent ({ color, checked, onClick, label }) {
     return (
-      <Box onClick={onClick} sx={{ backgroundColor: color + '.dark' }}>
+      <Box borderRadius={3} onClick={onClick} sx={{ backgroundColor: color + '.dark' }}>
         {/* Wrap the Checkbox in a FormControlLabel */}
         <FormControlLabel
           control={
@@ -353,16 +356,20 @@ export const PlayGame = () => {
               </Card>
             }
 
-            <TimeComponent question={question}/>
+            <TimeComponent question={question}/> <br/>
             {question.answers.map((answer, index) => {
               console.log(correct, answer.answer, correct.includes(answer.answer))
               if (question.type === 'single') {
                 return (
-                  <Button variant='outlined' color={correct.includes(answer.answer) ? 'success' : 'primary'} key={question + index} onClick={() => selectSingleAnswer(answer.answer, !allowed)} >{answer.answer}</Button>
+                  <>
+                    <Button variant='contained' color={correct.includes(answer.answer) ? 'success' : 'primary'} key={question + index} onClick={() => selectSingleAnswer(answer.answer, !allowed)} >{answer.answer}</Button><br/>
+                  </>
                 )
               } else {
                 return (
-                  <CheckboxComponent color={correct.includes(answer.answer) ? 'success' : 'primary'} checked={selected.includes(answer.answer)} key={question + index} onClick={() => selectMultiAnswer(answer.answer, !allowed)} label={answer.answer} />
+                  <>
+                    <CheckboxComponent color={correct.includes(answer.answer) ? 'success' : 'primary'} checked={selected.includes(answer.answer)} key={question + index} onClick={() => selectMultiAnswer(answer.answer, !allowed)} label={answer.answer} /><br/>
+                  </>
                 )
               }
             })}
