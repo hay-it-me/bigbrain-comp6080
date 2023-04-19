@@ -28,12 +28,16 @@ export const PlayGame = () => {
   const [correct, setCorrect] = React.useState([]);
   const [results, setResults] = React.useState([]);
   const _ = require('lodash');
+  // Get params
   const params = useParams();
   React.useEffect(() => {
     if (params.sessionId) {
+      // Set session id from params if it exists
       setSessionId(params.sessionId);
     }
   }, []);
+
+  // Reset (Play again) handler
   const reset = () => {
     setPlayerId('');
     setSessionId('');
@@ -54,6 +58,7 @@ export const PlayGame = () => {
     setCorrect([]);
     setResults([]);
   }
+  // Join Game handler
   const joinGame = async () => {
     const options = {
       method: 'POST',
@@ -66,14 +71,16 @@ export const PlayGame = () => {
       })
     };
     const data = await apiRequest('/play/join/' + sessionId, options);
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
     } else {
+      // Set player id from response
       setPlayerId(data.playerId);
     }
   }
-  // Lobby where
+  // Lobby time, poll for start
   React.useEffect(() => {
     if (playerId && !started) {
       const pollStart = setInterval(async () => {
@@ -84,6 +91,7 @@ export const PlayGame = () => {
           }
         };
         const data = await apiRequest('/play/' + playerId + '/status', options);
+        if (data.error === 'Invalid token') localStorage.removeItem('token')
         if (data.error) {
           if (data.error === 'Session ID is not an active session') {
             console.log('ended')
@@ -102,7 +110,8 @@ export const PlayGame = () => {
       }
     }
   }, [started, playerId]);
-  // Question where
+
+  // Question time, poll for next question
   React.useEffect(() => {
     if (started && !ended) {
       const pollStart = setInterval(async () => {
@@ -113,6 +122,7 @@ export const PlayGame = () => {
           }
         };
         const data = await apiRequest('/play/' + playerId + '/question', options);
+        if (data.error === 'Invalid token') localStorage.removeItem('token')
         if (data.error) {
           if (data.error === 'Session ID is not an active session') {
             console.log('ended')
@@ -122,6 +132,7 @@ export const PlayGame = () => {
             setters.setErrorOpen(true);
           }
         } else {
+          // Deep equals to check if the objects are the same. If not we reset state and display new data
           if (!_.isEqual(data.question, question)) {
             setCorrect([])
             setQuestion(data.question);
@@ -130,13 +141,14 @@ export const PlayGame = () => {
             setSelected([]);
           }
         }
+        // 150ms poll
       }, 150);
       return () => {
         clearInterval(pollStart);
       }
     }
   }, [started, question, ended]);
-  // Getting correct answer
+  // Getting correct answer as time has run out
   React.useEffect(async () => {
     if (!allowed) {
       const options = {
@@ -146,10 +158,11 @@ export const PlayGame = () => {
         }
       };
       const data = await apiRequest('/play/' + playerId + '/answer', options);
+      if (data.error === 'Invalid token') localStorage.removeItem('token')
       if (data.error) {
         if (data.error === 'Session ID is not an active session') {
-          console.log('ended')
           setEnded(true);
+          // Sometimes client and server dont sync very well so we will allow some leeway for another answer request. This wouldnt be a problem if the server also sent the current time (or even did the remaining time calc itself)
         } else if (data.error === 'Question time has not been completed') {
           setAllowed(true);
           setTimeout(() => { setAllowed(false) }, 100)
@@ -163,6 +176,7 @@ export const PlayGame = () => {
     }
   }, [allowed]);
 
+  // Game has ended so request results
   React.useEffect(async () => {
     if (ended) {
       const options = {
@@ -172,6 +186,7 @@ export const PlayGame = () => {
         }
       };
       const data = await apiRequest('/play/' + playerId + '/results', options);
+      if (data.error === 'Invalid token') localStorage.removeItem('token')
       if (data.error) {
         setters.setErrorMessage(data.error)
         setters.setErrorOpen(true);
@@ -181,6 +196,7 @@ export const PlayGame = () => {
     }
   }, [ended]);
 
+  // Handler for selecting any single answer button
   const selectSingleAnswer = async (answer, disabled) => {
     console.log(answer);
     if (!disabled) {
@@ -195,6 +211,7 @@ export const PlayGame = () => {
         })
       };
       const data = await apiRequest('/play/' + playerId + '/answer', options);
+      if (data.error === 'Invalid token') localStorage.removeItem('token')
       if (data.error) {
         setters.setErrorMessage(data.error)
         setters.setErrorOpen(true);
@@ -203,6 +220,7 @@ export const PlayGame = () => {
       }
     }
   }
+  // Handler for selecting any multi answer button / checkbox
   const selectMultiAnswer = async (answer, disabled) => {
     console.log(selected)
     console.log(answer, disabled);
@@ -213,14 +231,9 @@ export const PlayGame = () => {
             i !== selected.indexOf(answer)
           )
         )
-        console.log('did1')
-        console.log(selected)
       } else {
         setSelected([...selected, answer])
-        console.log('did2')
-        console.log(selected)
       }
-      console.log(selected);
     }
   }
   const sendMultiAnswer = async () => {
@@ -236,18 +249,20 @@ export const PlayGame = () => {
         })
       };
       const data = await apiRequest('/play/' + playerId + '/answer', options);
+      if (data.error === 'Invalid token') localStorage.removeItem('token')
       if (data.error) {
         setters.setErrorMessage(data.error)
         setters.setErrorOpen(true);
-      } else {
-        console.log('success mult')
       }
     }
   }
   React.useEffect(sendMultiAnswer, [selected]);
 
+  // Time Displaying component
   function TimeComponent ({ question }) {
+    // Progress is for the circular progress spinner
     const [progress, setProgress] = React.useState(0);
+    // Time remaining is seconds displayed in the spinner as text
     const [timeRemaining, setTimeRemaining] = React.useState(0);
 
     React.useEffect(() => {
@@ -256,12 +271,13 @@ export const PlayGame = () => {
         const secs = (now - Date.parse(question.isoTimeLastQuestionStarted)) / 1000;
         setTimeRemaining(question.timelimit - secs);
         setProgress(100 * ((question.timelimit - secs) / question.timelimit));
+        // If we ran out of time keep time and progress at 0 and disallow answering the question anymore
         if (question.timelimit - secs <= 0) {
           setTimeRemaining(0);
           setProgress(0);
           if (allowed) setAllowed(false);
         }
-      }, 200);
+      }, 100);
       return () => {
         clearInterval(timer);
       }
@@ -284,7 +300,7 @@ export const PlayGame = () => {
             }}
             >
               <Typography variant='caption' component="div" color="text.secondary">
-                {Math.floor(timeRemaining)}
+                {Math.ceil(timeRemaining)}
               </Typography>
             </Box>
           </Box>
@@ -316,6 +332,7 @@ export const PlayGame = () => {
       </header>
       <section aria-label="Game">
         <Grid container alignItems="center" direction="column" justifyContent="center" sx={{ width: '90%' }}>
+          {/* Join Game phase */}
           {!playerId && (
             <>
               <TextField
@@ -352,12 +369,14 @@ export const PlayGame = () => {
               </Button>
             </>
           )}
+          {/* Lobby phase */}
           {playerId && !started && (
             <>
               <Typography variant="h4">Game has not begun. Please Wait.</Typography>
               <CircularProgress />
             </>
           )}
+          {/* Question phase */}
           {started && !ended && (
             <>
               <Typography variant="h3">{question.question}</Typography>
@@ -397,9 +416,11 @@ export const PlayGame = () => {
               })}
             </>
           )}
+          {/* Results phase */}
           {ended && (
             <>
               <Typography variant="h3">Results</Typography><br/>
+              <Typography variant="h5">Check your hosts screen to see if you got into the top 5!</Typography><br/>
               {results.map((result, index) => {
                 const answerRes = result.correct ? 'correct!' : 'incorrect.'
                 return (
@@ -422,6 +443,8 @@ export const PlayGame = () => {
                   </>
                 )
               })}
+              {/* Points calculation explanation */}
+              <Typography variant='h6' sx={{ ml: 5, mr: 5 }} >Points calculation: Each quiz question has a maximum number of points assigned. Getting the answer right automatically gives you half of those points. The other half is based on the % time remaining when you answered the question correctly. The faster you answer correctly the more points you get!</Typography>
               <Button variant='contained' onClick={reset}><Link to='/play'>Play Again</Link></Button>
             </>
           )}

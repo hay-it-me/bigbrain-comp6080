@@ -26,7 +26,7 @@ export function fileToDataUrl (file) {
   });
   return dataUrlPromise;
 }
-
+// Function used to display time in closest unit
 export function displayTime (seconds) {
   const timeUnits = [
     [1, 'second', 'seconds'],
@@ -43,7 +43,7 @@ export function displayTime (seconds) {
   console.log(Math.ceil(seconds / divisor) + (Math.ceil(seconds / divisor) === 1 ? label : multiLabel))
   return Math.ceil(seconds / divisor) + ' ' + (Math.ceil(seconds / divisor) === 1 ? label : multiLabel);
 }
-
+// Styled flex div
 export const FlexDiv = styled('div')({
   display: 'flex',
   alignItems: 'center',

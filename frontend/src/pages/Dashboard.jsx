@@ -27,6 +27,7 @@ export const Dashboard = () => {
     setRerenderQuizzes(!rerenderQuizzes);
   }
 
+  // Get quizzes
   React.useEffect(async () => {
     const options = {
       method: 'GET',
@@ -37,6 +38,7 @@ export const Dashboard = () => {
     };
     const data = await apiRequest('/admin/quiz', options)
     console.log(data);
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
@@ -45,6 +47,7 @@ export const Dashboard = () => {
     }
   }, [rerenderQuizzes]);
 
+  // Create new game handler
   const createNewGame = async () => {
     const options = {
       method: 'POST',
@@ -57,6 +60,7 @@ export const Dashboard = () => {
       })
     };
     const data = await apiRequest('/admin/quiz/new', options);
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
@@ -70,6 +74,7 @@ export const Dashboard = () => {
     setNewGameDialogOpen(false)
     setNewGameTitle('');
   }
+
   return (
     <main>
       <header>

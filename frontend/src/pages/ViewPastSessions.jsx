@@ -6,10 +6,10 @@ import { Button, Grid, Typography } from '@mui/material';
 
 export const ViewPastSessions = () => {
   const { getters, setters } = useContext(Context);
+  // Use params to get id
   const { quizId } = useParams();
   const [sessions, setSessions] = React.useState([]);
   const [quizName, setQuizName] = React.useState('');
-  console.log(getters, setters, quizId)
   React.useEffect(async () => {
     const options = {
       method: 'GET',
@@ -19,10 +19,12 @@ export const ViewPastSessions = () => {
       }
     }
     const data = await apiRequest('/admin/quiz/' + quizId, options);
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error)
       setters.setErrorOpen(true);
     } else {
+      // Set quiz name and session numbers
       setSessions(data.oldSessions)
       setQuizName(data.name)
     }
@@ -34,6 +36,7 @@ export const ViewPastSessions = () => {
       </header>
       <section aria-label="Game Sessions">
         <Grid container alignItems="center" direction="column" justifyContent="center">
+          {/* map all buttons linking to viewgame link to see the results */}
           {sessions.map((session) => {
             return (
               <Grid item key={'session-' + session}>

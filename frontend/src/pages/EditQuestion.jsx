@@ -47,9 +47,11 @@ export const EditQuestion = () => {
   const [editIndex, setEditIndex] = React.useState(0);
 
   const { getters, setters } = useContext(Context);
+  // Get params
   const { gameId, questionId } = useParams();
   const navigate = useNavigate();
 
+  // Request current data
   React.useEffect(async () => {
     const options = {
       method: 'GET',
@@ -59,6 +61,7 @@ export const EditQuestion = () => {
       }
     };
     const data = await apiRequest('/admin/quiz/' + gameId, options)
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
@@ -130,7 +133,6 @@ export const EditQuestion = () => {
   };
 
   async function saveQuestion () {
-    console.log('SV')
     const correctAnswers = quizQuestion.answers.filter((answer) =>
       answer.correct === true
     ).length
@@ -139,6 +141,7 @@ export const EditQuestion = () => {
       setters.setErrorMessage('Single choice must have 1 correct answer');
       setters.setErrorOpen(true);
       return;
+      // We allow multiple choice to have 1 as it could be a trick by the host!
     } else if (quizQuestion.type === 'multiple' && correctAnswers < 1) {
       setters.setErrorMessage('Multiple choice must have at least 1 correct answer');
       setters.setErrorOpen(true);
@@ -174,6 +177,7 @@ export const EditQuestion = () => {
     };
     const data = await apiRequest('/admin/quiz/' + gameId, options)
 
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);

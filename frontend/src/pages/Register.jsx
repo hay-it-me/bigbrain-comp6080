@@ -20,6 +20,7 @@ export const Register = ({ onSuccess }) => {
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [name, setName] = React.useState('');
   const { setters } = useContext(Context);
+  // Register user handler
   async function registerUser () {
     if (password !== confirmPassword) {
       setters.setErrorMessage('Passwords do not match');
@@ -48,6 +49,7 @@ export const Register = ({ onSuccess }) => {
     }
   }
 
+  // Register Card Component
   const registerCard = (
     <React.Fragment>
       <CardContent>
@@ -123,6 +125,7 @@ export const Register = ({ onSuccess }) => {
           </div>
         </section>
         <Button sx={{ mt: 1, mb: 1 }} onClick={registerUser} aria-label="Register Account">Register Account</Button>
+        {/* Link to login form */}
         <div>
           <Typography variant="subtitle2" >
             Already have an account? Log in <Link to="/login">here</Link>

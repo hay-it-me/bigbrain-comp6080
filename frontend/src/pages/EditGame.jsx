@@ -23,7 +23,7 @@ export const EditGame = () => {
   const [quizName, setQuizName] = React.useState('');
   const [quizThumbnail, setQuizThumbnail] = React.useState('');
   const { getters, setters } = useContext(Context);
-
+  // Get game id from params
   const { gameId } = useParams();
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -65,6 +65,7 @@ export const EditGame = () => {
     )
   }
 
+  // Get current data
   React.useEffect(async () => {
     const options = {
       method: 'GET',
@@ -75,6 +76,7 @@ export const EditGame = () => {
     };
     const data = await apiRequest('/admin/quiz/' + gameId, options)
     console.log('/admin/quiz/' + gameId);
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
@@ -85,6 +87,7 @@ export const EditGame = () => {
     }
   }, []);
 
+  // submit edit
   React.useEffect(async () => {
     const options = {
       method: 'PUT',
@@ -100,6 +103,7 @@ export const EditGame = () => {
     };
     const data = await apiRequest('/admin/quiz/' + gameId, options)
     console.log('/admin/quiz/' + gameId);
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
@@ -168,6 +172,7 @@ export const EditGame = () => {
           </Typography>
           <Divider />
           <List>
+            {/* Map each question to a question list item */}
             {quizQuestions && quizQuestions.map((question, index) => {
               return (
                 <QuestionListItem
