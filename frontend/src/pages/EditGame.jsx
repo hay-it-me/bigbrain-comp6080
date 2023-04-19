@@ -141,7 +141,7 @@ export const EditGame = () => {
           {quizThumbnail && (
             <>
               <Box>
-                <BorderedImage src={quizThumbnail} alt={quizName + ' Quiz Thumbnail'} />
+                <BorderedImage id="quiz-image" src={quizThumbnail} alt={quizName + ' Quiz Thumbnail'} />
               </Box>
             </>
           )}
@@ -198,7 +198,7 @@ export const EditGame = () => {
               )
             })}
           </List>
-          <Button variant="contained" onClick={addNewQuestion} aria-label="Add New Question Button">
+          <Button id="add-new-question" variant="contained" onClick={addNewQuestion} aria-label="Add New Question Button">
             Add New Question
           </Button>
         </Box>

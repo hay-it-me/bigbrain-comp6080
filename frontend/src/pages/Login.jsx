@@ -76,6 +76,7 @@ export const Login = ({ onSuccess }) => {
               <InputLabel htmlFor="login-email">Email</InputLabel>
               <Input
                 id="login-email"
+                name="email"
                 value={email}
                 type="email"
                 onChange={(event) => {
@@ -91,6 +92,7 @@ export const Login = ({ onSuccess }) => {
               <InputLabel htmlFor="login-password">Password</InputLabel>
               <Input
                 id="login-password"
+                name="password"
                 type="password"
                 value={password}
                 onChange={(event) => {
@@ -101,7 +103,7 @@ export const Login = ({ onSuccess }) => {
               />
             </FormControl>
           </div>
-          <Button sx={{ m: 2 }} onClick={loginUser}>Log In</Button>
+          <Button sx={{ m: 2 }} id="login-button" onClick={loginUser}>Log In</Button>
         </section>
         <aside role="complementary">
           <Typography variant="subtitle2" sx={{ ml: 2 }}>
