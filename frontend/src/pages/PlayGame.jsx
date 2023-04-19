@@ -151,10 +151,11 @@ export const PlayGame = () => {
           console.log('ended')
           setEnded(true);
         } else if (data.error === 'Question time has not been completed') {
-          setters.setErrorMessage(data.error)
-          setters.setErrorOpen(true);
           setAllowed(true);
           setTimeout(() => { setAllowed(false) }, 100)
+        } else {
+          setters.setErrorMessage(data.error);
+          setters.setErrorOpen(true);
         }
       } else {
         setCorrect(data.answerIds)
