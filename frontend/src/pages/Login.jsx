@@ -8,8 +8,6 @@ import {
   Box,
   Card,
   CardContent,
-  // Snackbar,
-  // Alert
 } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import React from 'react';
@@ -20,10 +18,8 @@ import { FlexDiv } from '../utilities/helpers';
 export const Login = ({ onSuccess }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
-  // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
   const { setters } = useContext(Context);
-
+  // Submit handler
   async function loginUser () {
     const response = await fetch('http://localhost:5005/admin/auth/login', {
       method: 'POST',
@@ -44,14 +40,7 @@ export const Login = ({ onSuccess }) => {
       onSuccess(data.token);
     }
   }
-
-  // const handleErrorClose = (event, reason) => {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
-  //   setters.setErrorOpen(false);
-  // };
-
+  // Card Component
   const loginCard = (
     <React.Fragment>
       <header role="banner">
@@ -76,6 +65,7 @@ export const Login = ({ onSuccess }) => {
               <InputLabel htmlFor="login-email">Email</InputLabel>
               <Input
                 id="login-email"
+                name="email"
                 value={email}
                 type="email"
                 onChange={(event) => {
@@ -91,6 +81,7 @@ export const Login = ({ onSuccess }) => {
               <InputLabel htmlFor="login-password">Password</InputLabel>
               <Input
                 id="login-password"
+                name="password"
                 type="password"
                 value={password}
                 onChange={(event) => {
@@ -101,11 +92,12 @@ export const Login = ({ onSuccess }) => {
               />
             </FormControl>
           </div>
-          <Button sx={{ m: 2 }} onClick={loginUser}>Log In</Button>
+          <Button sx={{ m: 2 }} id="login-button" onClick={loginUser}>Log In</Button>
         </section>
+        {/* Link to register form */}
         <aside role="complementary">
           <Typography variant="subtitle2" sx={{ ml: 2 }}>
-            Don&apos;t have an account? Create one <Link to="/register">here</Link>
+            Don&apos;t have an account? Create one <Link id="register-page" to="/register">here</Link>
           </Typography>
         </aside>
       </main>
@@ -121,11 +113,6 @@ export const Login = ({ onSuccess }) => {
 
   return (
     <>
-      {/* <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
-        <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {getters.errorMessage}
-        </Alert>
-      </Snackbar> */}
       <Grid
         container
         justifyContent="center"

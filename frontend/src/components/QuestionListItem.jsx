@@ -27,14 +27,15 @@ export const QuestionListItem = ({ question, questionId, gameId, onDelete }) => 
           </Avatar>
         </ListItemAvatar>
         <ListItemText
+          id={'question-' + questionId}
           primary={question.question}
           secondary={Object.keys(question.answers).length + ' Choices'}
         />
         <ListItemSecondaryAction>
-          <IconButton aria-label="edit" component={ Link } to={'/editgame/' + gameId + '/editquestion/' + questionId }>
+          <IconButton aria-label="edit" id={'edit-button-question-' + questionId} component={ Link } to={'/editgame/' + gameId + '/editquestion/' + questionId }>
             <EditIcon />
           </IconButton>
-          <IconButton edge="end" aria-label="delete" onClick={deleteQuestion}>
+          <IconButton edge="end" id={'delete-button-question-' + questionId} aria-label="delete" onClick={deleteQuestion}>
             <DeleteIcon />
           </IconButton>
         </ListItemSecondaryAction>

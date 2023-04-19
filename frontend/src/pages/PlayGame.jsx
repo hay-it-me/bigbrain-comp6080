@@ -1,12 +1,10 @@
-import { Box, Button, Card, CardContent, Checkbox, CircularProgress, FormControlLabel, Grid, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, CardMedia, Checkbox, CircularProgress, FormControlLabel, Grid, Typography } from '@mui/material';
 import React from 'react';
 import { useContext, Context } from '../context';
-import { useParams } from 'react-router-dom';
-import TextField from '@mui/material/TextField/TextField';
+import { Link, useParams } from 'react-router-dom';
+import TextField from '@mui/material/TextField';
 import { apiRequest } from '../utilities/helpers';
 import ReactPlayer from 'react-player';
-// import lodash from 'lodash';
-// import TimeComponent from '../components/TimeComponent';
 
 export const PlayGame = () => {
   const { setters } = useContext(Context);
@@ -25,21 +23,42 @@ export const PlayGame = () => {
     photosrc: 'src',
     isoTimeLastQuestionStarted: '',
   });
-  // const [timeRemaining, setTimeRemaining] = React.useState(100);
-  // const [progress, setProgress] = React.useState(0);
   const [allowed, setAllowed] = React.useState(true);
   const [selected, setSelected] = React.useState([]);
   const [correct, setCorrect] = React.useState([]);
   const [results, setResults] = React.useState([]);
   const _ = require('lodash');
+  // Get params
   const params = useParams();
   React.useEffect(() => {
     if (params.sessionId) {
+      // Set session id from params if it exists
       setSessionId(params.sessionId);
     }
   }, []);
-  // console.log(getters, setters, sessionId);
 
+  // Reset (Play again) handler
+  const reset = () => {
+    setPlayerId('');
+    setSessionId('');
+    setStarted(false);
+    setEnded(false);
+    setQuestion({
+      question: '',
+      type: '',
+      answers: [],
+      timelimit: 0,
+      points: 0,
+      videourl: 'url',
+      photosrc: 'src',
+      isoTimeLastQuestionStarted: '',
+    });
+    setAllowed(true);
+    setSelected([]);
+    setCorrect([]);
+    setResults([]);
+  }
+  // Join Game handler
   const joinGame = async () => {
     const options = {
       method: 'POST',
@@ -52,14 +71,16 @@ export const PlayGame = () => {
       })
     };
     const data = await apiRequest('/play/join/' + sessionId, options);
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
     } else {
+      // Set player id from response
       setPlayerId(data.playerId);
     }
   }
-  // Lobby where
+  // Lobby time, poll for start
   React.useEffect(() => {
     if (playerId && !started) {
       const pollStart = setInterval(async () => {
@@ -70,6 +91,7 @@ export const PlayGame = () => {
           }
         };
         const data = await apiRequest('/play/' + playerId + '/status', options);
+        if (data.error === 'Invalid token') localStorage.removeItem('token')
         if (data.error) {
           if (data.error === 'Session ID is not an active session') {
             console.log('ended')
@@ -88,7 +110,8 @@ export const PlayGame = () => {
       }
     }
   }, [started, playerId]);
-  // Question where
+
+  // Question time, poll for next question
   React.useEffect(() => {
     if (started && !ended) {
       const pollStart = setInterval(async () => {
@@ -99,6 +122,7 @@ export const PlayGame = () => {
           }
         };
         const data = await apiRequest('/play/' + playerId + '/question', options);
+        if (data.error === 'Invalid token') localStorage.removeItem('token')
         if (data.error) {
           if (data.error === 'Session ID is not an active session') {
             console.log('ended')
@@ -107,10 +131,8 @@ export const PlayGame = () => {
             setters.setErrorMessage(data.error)
             setters.setErrorOpen(true);
           }
-          // console.log(data, setEnded)
         } else {
-          // console.log(question)
-          // console.log(data.question !== question)
+          // Deep equals to check if the objects are the same. If not we reset state and display new data
           if (!_.isEqual(data.question, question)) {
             setCorrect([])
             setQuestion(data.question);
@@ -119,13 +141,14 @@ export const PlayGame = () => {
             setSelected([]);
           }
         }
+        // 150ms poll
       }, 150);
       return () => {
         clearInterval(pollStart);
       }
     }
   }, [started, question, ended]);
-  // Getting correct answer
+  // Getting correct answer as time has run out
   React.useEffect(async () => {
     if (!allowed) {
       const options = {
@@ -135,23 +158,25 @@ export const PlayGame = () => {
         }
       };
       const data = await apiRequest('/play/' + playerId + '/answer', options);
+      if (data.error === 'Invalid token') localStorage.removeItem('token')
       if (data.error) {
         if (data.error === 'Session ID is not an active session') {
-          console.log('ended')
           setEnded(true);
+          // Sometimes client and server dont sync very well so we will allow some leeway for another answer request. This wouldnt be a problem if the server also sent the current time (or even did the remaining time calc itself)
         } else if (data.error === 'Question time has not been completed') {
-          setters.setErrorMessage(data.error)
-          setters.setErrorOpen(true);
           setAllowed(true);
           setTimeout(() => { setAllowed(false) }, 100)
+        } else {
+          setters.setErrorMessage(data.error);
+          setters.setErrorOpen(true);
         }
       } else {
-        // console.log(data.answerIds);
         setCorrect(data.answerIds)
       }
     }
   }, [allowed]);
 
+  // Game has ended so request results
   React.useEffect(async () => {
     if (ended) {
       const options = {
@@ -161,17 +186,17 @@ export const PlayGame = () => {
         }
       };
       const data = await apiRequest('/play/' + playerId + '/results', options);
+      if (data.error === 'Invalid token') localStorage.removeItem('token')
       if (data.error) {
         setters.setErrorMessage(data.error)
         setters.setErrorOpen(true);
       } else {
         setResults(data);
-        // console.log(data.answerIds);
-        // setCorrect(data.answerIds)
       }
     }
   }, [ended]);
 
+  // Handler for selecting any single answer button
   const selectSingleAnswer = async (answer, disabled) => {
     console.log(answer);
     if (!disabled) {
@@ -186,6 +211,7 @@ export const PlayGame = () => {
         })
       };
       const data = await apiRequest('/play/' + playerId + '/answer', options);
+      if (data.error === 'Invalid token') localStorage.removeItem('token')
       if (data.error) {
         setters.setErrorMessage(data.error)
         setters.setErrorOpen(true);
@@ -193,9 +219,8 @@ export const PlayGame = () => {
         console.log('success')
       }
     }
-    // TODO ANSWER QN
-    // setAllowed(false);
   }
+  // Handler for selecting any multi answer button / checkbox
   const selectMultiAnswer = async (answer, disabled) => {
     console.log(selected)
     console.log(answer, disabled);
@@ -206,15 +231,9 @@ export const PlayGame = () => {
             i !== selected.indexOf(answer)
           )
         )
-        console.log('did1')
-        console.log(selected)
       } else {
         setSelected([...selected, answer])
-        console.log('did2')
-        console.log(selected)
       }
-      console.log(selected);
-      // TODO ANSWER QN
     }
   }
   const sendMultiAnswer = async () => {
@@ -230,18 +249,20 @@ export const PlayGame = () => {
         })
       };
       const data = await apiRequest('/play/' + playerId + '/answer', options);
+      if (data.error === 'Invalid token') localStorage.removeItem('token')
       if (data.error) {
         setters.setErrorMessage(data.error)
         setters.setErrorOpen(true);
-      } else {
-        console.log('success mult')
       }
     }
   }
   React.useEffect(sendMultiAnswer, [selected]);
 
+  // Time Displaying component
   function TimeComponent ({ question }) {
+    // Progress is for the circular progress spinner
     const [progress, setProgress] = React.useState(0);
+    // Time remaining is seconds displayed in the spinner as text
     const [timeRemaining, setTimeRemaining] = React.useState(0);
 
     React.useEffect(() => {
@@ -250,12 +271,13 @@ export const PlayGame = () => {
         const secs = (now - Date.parse(question.isoTimeLastQuestionStarted)) / 1000;
         setTimeRemaining(question.timelimit - secs);
         setProgress(100 * ((question.timelimit - secs) / question.timelimit));
+        // If we ran out of time keep time and progress at 0 and disallow answering the question anymore
         if (question.timelimit - secs <= 0) {
           setTimeRemaining(0);
           setProgress(0);
           if (allowed) setAllowed(false);
         }
-      }, 200);
+      }, 100);
       return () => {
         clearInterval(timer);
       }
@@ -278,7 +300,7 @@ export const PlayGame = () => {
             }}
             >
               <Typography variant='caption' component="div" color="text.secondary">
-                {Math.floor(timeRemaining)}
+                {Math.ceil(timeRemaining)}
               </Typography>
             </Box>
           </Box>
@@ -290,13 +312,11 @@ export const PlayGame = () => {
   function CheckboxComponent ({ color, checked, onClick, label }) {
     return (
         <Box borderRadius={3} onClick={onClick} sx={{ backgroundColor: color + '.dark' }}>
-          {/* Wrap the Checkbox in a FormControlLabel */}
           <FormControlLabel
             control={
               <Checkbox
                 checked={checked}
                 onChange={onClick}
-                // disabled={disabled}
                 />
               }
             label={label}
@@ -311,7 +331,8 @@ export const PlayGame = () => {
       <Typography variant='h3'>Play a Game</Typography>
       </header>
       <section aria-label="Game">
-        <Grid container alignItems="center" direction="column" justifyContent="center">
+        <Grid container alignItems="center" direction="column" justifyContent="center" sx={{ width: '90%' }}>
+          {/* Join Game phase */}
           {!playerId && (
             <>
               <TextField
@@ -348,23 +369,25 @@ export const PlayGame = () => {
               </Button>
             </>
           )}
+          {/* Lobby phase */}
           {playerId && !started && (
             <>
               <Typography variant="h4">Game has not begun. Please Wait.</Typography>
               <CircularProgress />
             </>
           )}
+          {/* Question phase */}
           {started && !ended && (
             <>
               <Typography variant="h3">{question.question}</Typography>
               {(question.videourl !== '' || question.photosrc !== '') && (
-                <Card>
-                  <CardContent>
+                <Card sx={{ width: '90%' }}>
+                  <CardContent sx={{ width: '100%', height: '100%' }}>
                     {question.videourl !== '' && (
                       <ReactPlayer url={question.videourl} alt="Video Question" />
                     )}
                     {question.photosrc !== '' && (
-                      <img src={question.photosrc} alt="Image Question" />
+                      <CardMedia component="img" image={question.photosrc} alt="Image Question" />
                     )}
                   </CardContent>
                 </Card>
@@ -393,17 +416,19 @@ export const PlayGame = () => {
               })}
             </>
           )}
+          {/* Results phase */}
           {ended && (
             <>
-              <Typography variant="h3">Results</Typography>
+              <Typography variant="h3">Results</Typography><br/>
+              <Typography variant="h5">Check your hosts screen to see if you got into the top 5!</Typography><br/>
               {results.map((result, index) => {
                 const answerRes = result.correct ? 'correct!' : 'incorrect.'
                 return (
                   <>
-                    <Typography variant='h4'>{'Question ' + (index + 1) }</Typography>
+                    <Typography variant='h5'>{'Question ' + (index + 1) }</Typography>
                     <Grid container justifyContent="center" spacing={2} columns={12}>
                       <Grid item justifyContent="center" xs={5}>
-                        <Typography variant='h5' sx={{ textAlign: 'center' }} >You Answered:</Typography>
+                        <Typography variant='h6' sx={{ textAlign: 'center' }} >You Answered:</Typography>
                         {result.answerIds.map((answer) => {
                           return (
                             <>
@@ -411,21 +436,25 @@ export const PlayGame = () => {
                             </>
                           )
                         })}
-                        <Typography variant='h6' sx={{ textAlign: 'center' }} >This was {answerRes}</Typography>
+                        <Typography variant='h6' sx={{ textAlign: 'center' }} >This was {answerRes}</Typography><br/>
 
                       </Grid>
-                      {/* <Grid item justifyContent="center" xs={5}>
-                        <Typography variant='h5'>Your Answers</Typography>
-                        <Typography sx={{ textAlign: 'center', overflowWrap: 'break-word' }}>b</Typography>
-                      </Grid> */}
                     </Grid>
                   </>
                 )
               })}
+              {/* Points calculation explanation */}
+              <Typography variant='h6' sx={{ ml: 5, mr: 5 }} >Points calculation: Each quiz question has a maximum number of points assigned. Getting the answer right automatically gives you half of those points. The other half is based on the % time remaining when you answered the question correctly. The faster you answer correctly the more points you get!</Typography>
+              <Button variant='contained' onClick={reset}><Link to='/play'>Play Again</Link></Button>
             </>
           )}
         </Grid>
       </section>
+      <footer>
+        <Typography variant="subtitle2" align="center" sx={{ m: 5 }}>
+          © 2023 VENTRICOLUMNA
+        </Typography>
+      </footer>
     </main>
   )
 }

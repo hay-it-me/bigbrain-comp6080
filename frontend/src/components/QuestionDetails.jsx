@@ -93,7 +93,6 @@ export const QuestionDetails = ({ question, setQuestion, points, setPoints, time
         <FormLabel id="media-choice">Media Type</FormLabel>
         <RadioGroup
           row
-          aria-labelled-by="media-choice"
           name="media-choice-group"
           value={mediaChoice}
           onChange={(event) => setMediaChoice(event.target.value)}
@@ -138,7 +137,7 @@ export const QuestionDetails = ({ question, setQuestion, points, setPoints, time
     <FlexDiv>
       {img && mediaChoice === 'img' && (
         <>
-          <BorderedImage src={img} alt="question-image" />
+          <BorderedImage id="question-image" src={img} alt="question-image" />
         </>
       )}
       {!img && mediaChoice === 'img' && (

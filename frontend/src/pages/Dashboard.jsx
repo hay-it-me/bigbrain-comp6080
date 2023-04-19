@@ -1,6 +1,4 @@
 import {
-  // Snackbar,
-  // Alert,
   Button,
   DialogTitle,
   DialogContent,
@@ -13,7 +11,6 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
-// import ResponsiveAppBar from '../components/Navbar';
 import { QuizCard } from '../components/QuizCard';
 import { FlexDiv, apiRequest } from '../utilities/helpers'
 import { useContext, Context } from '../context';
@@ -26,21 +23,11 @@ export const Dashboard = () => {
 
   const { getters, setters } = useContext(Context);
 
-  // function logoutUser () {
-  //   onLogout(true);
-  // }
-
   const rerenderQuizList = () => {
     setRerenderQuizzes(!rerenderQuizzes);
   }
 
-  // const handleErrorClose = (event, reason) => {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
-  //   setters.setErrorOpen(false);
-  // };
-
+  // Get quizzes
   React.useEffect(async () => {
     const options = {
       method: 'GET',
@@ -51,6 +38,7 @@ export const Dashboard = () => {
     };
     const data = await apiRequest('/admin/quiz', options)
     console.log(data);
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
@@ -59,6 +47,7 @@ export const Dashboard = () => {
     }
   }, [rerenderQuizzes]);
 
+  // Create new game handler
   const createNewGame = async () => {
     const options = {
       method: 'POST',
@@ -71,6 +60,7 @@ export const Dashboard = () => {
       })
     };
     const data = await apiRequest('/admin/quiz/new', options);
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
@@ -84,13 +74,14 @@ export const Dashboard = () => {
     setNewGameDialogOpen(false)
     setNewGameTitle('');
   }
+
   return (
     <main>
       <header>
         <FlexDiv>
           <Button
-            // sx={{ marginTop: '30px' }}
             variant="outlined"
+            name="new-game-button"
             onClick={() => setNewGameDialogOpen(true)}
             aria-label="Create a New Game"
           >
@@ -112,6 +103,7 @@ export const Dashboard = () => {
               <InputLabel htmlFor="new-game-name">Name</InputLabel>
               <Input
                 id="new-game-name"
+                name="new-game-name"
                 type="text"
                 value={newGameTitle}
                 onChange={(event) => {
@@ -145,7 +137,7 @@ export const Dashboard = () => {
         </Grid>
       </section>
       <footer>
-        <Typography variant="subtitle2" align="center">
+        <Typography variant="subtitle2" align="center" sx={{ m: 5 }}>
           © 2023 VENTRICOLUMNA
         </Typography>
       </footer>

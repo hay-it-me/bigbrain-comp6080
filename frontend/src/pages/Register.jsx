@@ -8,8 +8,6 @@ import {
   Box,
   Card,
   CardContent,
-  // Snackbar,
-  // Alert
 } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import React from 'react';
@@ -21,10 +19,8 @@ export const Register = ({ onSuccess }) => {
   const [password, setPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [name, setName] = React.useState('');
-  // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
-  // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
   const { setters } = useContext(Context);
-  // console.log(getters)
+  // Register user handler
   async function registerUser () {
     if (password !== confirmPassword) {
       setters.setErrorMessage('Passwords do not match');
@@ -53,13 +49,7 @@ export const Register = ({ onSuccess }) => {
     }
   }
 
-  // const handleErrorClose = (event, reason) => {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
-  //   setters.setErrorOpen(false);
-  // };
-
+  // Register Card Component
   const registerCard = (
     <React.Fragment>
       <CardContent>
@@ -82,6 +72,7 @@ export const Register = ({ onSuccess }) => {
               <InputLabel htmlFor="register-name">Name</InputLabel>
               <Input
                 id="register-name"
+                name="name"
                 value={name}
                 type="text"
                 onChange={(event) => {
@@ -96,6 +87,7 @@ export const Register = ({ onSuccess }) => {
               <InputLabel htmlFor="register-email">Email</InputLabel>
               <Input
                 id="register-email"
+                name="email"
                 value={email}
                 type="email"
                 onChange={(event) => {
@@ -110,6 +102,7 @@ export const Register = ({ onSuccess }) => {
               <InputLabel htmlFor="register-password">Password</InputLabel>
               <Input
                 id="register-password"
+                name="password"
                 type="password"
                 value={password}
                 onChange={(event) => {
@@ -124,6 +117,7 @@ export const Register = ({ onSuccess }) => {
               <InputLabel htmlFor="register-password-confirm">Confirm Password</InputLabel>
               <Input
                 id="register-password-confirm"
+                name="confirm-password"
                 type="password"
                 value={confirmPassword}
                 onChange={(event) => {
@@ -134,7 +128,7 @@ export const Register = ({ onSuccess }) => {
             </FormControl>
           </div>
         </section>
-        <Button sx={{ mt: 1, mb: 1 }} onClick={registerUser} aria-label="Register Account">Register Account</Button>
+        <Button sx={{ mt: 1, mb: 1 }} id="register-button" onClick={registerUser} aria-label="Register Account">Register Account</Button>
         <div>
           <Typography variant="subtitle2" >
             Already have an account? Log in <Link to="/login">here</Link>
@@ -151,11 +145,6 @@ export const Register = ({ onSuccess }) => {
 
   return (
     <>
-      {/* <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
-        <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {getters.errorMessage}
-        </Alert>
-      </Snackbar> */}
       <Grid
         container
         justifyContent="center"

@@ -1,7 +1,5 @@
 import {
   Grid,
-  // Snackbar,
-  // Alert,
   FormControl,
   Input,
   Box,
@@ -17,31 +15,17 @@ import { useParams, Link } from 'react-router-dom';
 import React from 'react';
 import { apiRequest, fileToDataUrl, FlexDiv } from '../utilities/helpers';
 import { QuestionListItem } from '../components/QuestionListItem';
-// import ResponsiveAppBar from '../components/Navbar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useContext, Context } from '../context';
 
 export const EditGame = () => {
-  // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
-  // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
   const [quizQuestions, setQuizQuestions] = React.useState([]);
   const [quizName, setQuizName] = React.useState('');
   const [quizThumbnail, setQuizThumbnail] = React.useState('');
+  const [updateName, setUpdateName] = React.useState(false)
   const { getters, setters } = useContext(Context);
-
+  // Get game id from params
   const { gameId } = useParams();
-
-  // function logoutUser () {
-  //   onLogout(true);
-  // }
-
-  // const handleErrorClose = (event, reason) => {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
-  //   setters.setErrorOpen(false);
-  // };
-
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -82,6 +66,7 @@ export const EditGame = () => {
     )
   }
 
+  // Get current data
   React.useEffect(async () => {
     const options = {
       method: 'GET',
@@ -92,6 +77,7 @@ export const EditGame = () => {
     };
     const data = await apiRequest('/admin/quiz/' + gameId, options)
     console.log('/admin/quiz/' + gameId);
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
@@ -102,6 +88,7 @@ export const EditGame = () => {
     }
   }, []);
 
+  // submit edit
   React.useEffect(async () => {
     const options = {
       method: 'PUT',
@@ -117,11 +104,12 @@ export const EditGame = () => {
     };
     const data = await apiRequest('/admin/quiz/' + gameId, options)
     console.log('/admin/quiz/' + gameId);
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
     }
-  }, [quizQuestions, quizName, quizThumbnail])
+  }, [quizQuestions, updateName, quizThumbnail])
 
   const HiddenFileInput = styled('input')({
     display: 'none',
@@ -140,7 +128,7 @@ export const EditGame = () => {
           {quizThumbnail && (
             <>
               <Box>
-                <BorderedImage src={quizThumbnail} alt={quizName + ' Quiz Thumbnail'} />
+                <BorderedImage id="quiz-image" src={quizThumbnail} alt={quizName + ' Quiz Thumbnail'} />
               </Box>
             </>
           )}
@@ -185,6 +173,7 @@ export const EditGame = () => {
           </Typography>
           <Divider />
           <List>
+            {/* Map each question to a question list item */}
             {quizQuestions && quizQuestions.map((question, index) => {
               return (
                 <QuestionListItem
@@ -197,7 +186,7 @@ export const EditGame = () => {
               )
             })}
           </List>
-          <Button variant="contained" onClick={addNewQuestion} aria-label="Add New Question Button">
+          <Button id="add-new-question" variant="contained" onClick={addNewQuestion} aria-label="Add New Question Button">
             Add New Question
           </Button>
         </Box>
@@ -209,6 +198,8 @@ export const EditGame = () => {
     <main>
       <FlexDiv>
         <Button
+          aria-labelledby="back-button"
+          id="back-button"
           component={Link}
           to="/dashboard"
           aria-label="Back Button"
@@ -221,12 +212,14 @@ export const EditGame = () => {
           </InputLabel>
           <Input
             id="game-name-input"
+            name="game-name"
             type="text"
             value={quizName}
             autoFocus
             onChange={(event) => {
               setQuizName(event.target.value);
             }}
+            onBlur={() => setUpdateName(!updateName)}
             sx={{
               fontSize: '2rem',
               marginBottom: '10px'
@@ -249,7 +242,7 @@ export const EditGame = () => {
         </Grid>
       </Grid>
       <footer>
-      <Typography variant="subtitle2" align="center">
+        <Typography variant="subtitle2" align="center" sx={{ m: 5 }}>
           © 2023 VENTRICOLUMNA
         </Typography>
       </footer>

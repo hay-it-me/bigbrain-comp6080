@@ -19,9 +19,7 @@ import IconButton from '@mui/material/IconButton';
 import { apiRequest, displayTime } from '../utilities/helpers'
 import { Link } from 'react-router-dom';
 import { useContext, Context } from '../context';
-// import config from '../config.json';
 
-// Creates all the quiz cards on the dashboard
 export const QuizCard = ({ quiz, rerender }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -31,8 +29,8 @@ export const QuizCard = ({ quiz, rerender }) => {
   const [endGameDialogOpen, setEndGameDialogOpen] = React.useState(false);
   const [endGameTitle, setEndGameTitle] = React.useState('');
   const [questions, setQuestions] = React.useState(null);
-  // let quiz = null;
   const { getters, setters } = useContext(Context);
+  // Get quiz details
   React.useEffect(async () => {
     const options = {
       method: 'GET',
@@ -42,6 +40,7 @@ export const QuizCard = ({ quiz, rerender }) => {
       }
     };
     const data = await apiRequest('/admin/quiz/' + quiz.id, options)
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
@@ -77,15 +76,17 @@ export const QuizCard = ({ quiz, rerender }) => {
       body: JSON.stringify({})
     };
     const data = await apiRequest('/admin/quiz/' + quiz.id, options)
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     closeDeleteGameDialog();
     if (data.error) {
-      // setErrorMessage(data.error);
-      // setErrorOpen(true);
+      setters.setErrorMessage(data.error)
+      setters.setErrorOpen(true);
     } else {
       rerender(true);
     }
   }
 
+  // Start Game handler
   const startGame = async (quizId, quizName) => {
     const options = {
       method: 'POST',
@@ -95,13 +96,12 @@ export const QuizCard = ({ quiz, rerender }) => {
       }
     };
     const data = await apiRequest('/admin/quiz/' + quizId + '/start', options);
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     console.log(data)
     if (data.error) {
       setters.setErrorMessage(data.error)
       setters.setErrorOpen(true);
     } else {
-      // setSessionCode('TODO')
-      // console.log('getting')
       const optionsGet = {
         method: 'GET',
         headers: {
@@ -109,7 +109,9 @@ export const QuizCard = ({ quiz, rerender }) => {
           Authorization: `Bearer ${getters.token}`
         }
       };
+      // We need to make a request to quiz/quizId to get the session code because the backed doenst return the session code when we start
       const dataGet = await apiRequest('/admin/quiz/' + quizId, optionsGet);
+      if (dataGet.error === 'Invalid token') localStorage.removeItem('token')
       if (dataGet.error) {
         setters.setErrorMessage(dataGet.error)
       } else {
@@ -120,7 +122,7 @@ export const QuizCard = ({ quiz, rerender }) => {
       }
     }
   }
-
+  //  In order to end game we need to first get the session id so we can later ask if they want to be redirected to the results screen.
   const endGame = async (quizId, quizName) => {
     const optionsGet = {
       method: 'GET',
@@ -130,6 +132,7 @@ export const QuizCard = ({ quiz, rerender }) => {
       }
     };
     const dataGet = await apiRequest('/admin/quiz/' + quizId, optionsGet);
+    if (dataGet.error === 'Invalid token') localStorage.removeItem('token')
     if (dataGet.error) {
       setters.setErrorMessage(dataGet.error)
     } else {
@@ -141,6 +144,7 @@ export const QuizCard = ({ quiz, rerender }) => {
         }
       };
       const data = await apiRequest('/admin/quiz/' + quizId + '/end', options);
+      if (data.error === 'Invalid token') localStorage.removeItem('token')
       if (data.error) {
         setters.setErrorMessage(data.error)
         setters.setErrorOpen(true);
@@ -151,9 +155,9 @@ export const QuizCard = ({ quiz, rerender }) => {
         setSessionCode(dataGet.active)
         rerender(true);
       }
-      // TODO
     }
   }
+
   return (
     <>
       <Card key={quiz.id} sx={{ minWidth: 300, maxWidth: 350, margin: 2 }}>
@@ -188,10 +192,14 @@ export const QuizCard = ({ quiz, rerender }) => {
                 }}
               >
                 <MenuItem key='Edit Game' onClick={handleCloseMenu} component={Link} to={'/editgame/' + quiz.id}>
-                      <Typography textAlign="center">Edit Game</Typography>
+                    <Typography textAlign="center">Edit Game</Typography>
                   </MenuItem>
                 <MenuItem key='Delete Game' onClick={openDeleteGameDialog} >
-                    <Typography textAlign="center" color="red">Delete Game</Typography>
+                  <Typography textAlign="center" color="red">Delete Game</Typography>
+                </MenuItem>
+                {/* Past Games menu here */}
+                <MenuItem key='View Past Games' onClick={handleCloseMenu} component={Link} to={'/viewpastsessions/' + quiz.id}>
+                  <Typography textAlign="center">View Past Games</Typography>
                 </MenuItem>
               </Menu>
             </>
@@ -206,12 +214,6 @@ export const QuizCard = ({ quiz, rerender }) => {
             alt={quiz.name + ' thumbnail'}
         />
         <CardContent>
-            {/* <Typography
-            variant="body1"
-            color="text.secondary"
-            >
-            {quiz.owner}
-            </Typography> */}
             {questions
               ? <Typography
               variant="body1"
@@ -250,6 +252,7 @@ export const QuizCard = ({ quiz, rerender }) => {
 
         </CardActions>
       </Card>
+      {/* Confirm Delete dialog */}
       <Dialog
         open={deleteDialogOpen}
         onClose={closeDeleteGameDialog}
@@ -269,6 +272,7 @@ export const QuizCard = ({ quiz, rerender }) => {
           <Button onClick={deleteGame}>Submit</Button>
         </DialogActions>
       </Dialog>
+      {/* Start Game dialog */}
       <Dialog
         open={startGameDialogOpen}
       >
@@ -285,6 +289,7 @@ export const QuizCard = ({ quiz, rerender }) => {
           <Button onClick={() => setStartGameDialogOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
+      {/* Game ended dialog */}
       <Dialog
         open={endGameDialogOpen}
       >

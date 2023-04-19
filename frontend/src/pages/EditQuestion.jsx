@@ -15,7 +15,6 @@ import {
   List,
   Grid
 } from '@mui/material';
-// import { AnswerInput } from '../components/AnswerInput';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import React from 'react';
 import { useContext, Context } from '../context';
@@ -42,12 +41,17 @@ export const EditQuestion = () => {
   const [mediaChoice, setMediaChoice] = React.useState('img')
 
   const [addDialogOpen, setAddDialogOpen] = React.useState(false);
+  const [editDialogOpen, setEditDialogOpen] = React.useState(false);
   const [dialogAnswer, setDialogAnswer] = React.useState('');
+  const [editDialogAnswer, setEditDialogAnswer] = React.useState('');
+  const [editIndex, setEditIndex] = React.useState(0);
 
   const { getters, setters } = useContext(Context);
+  // Get params
   const { gameId, questionId } = useParams();
   const navigate = useNavigate();
 
+  // Request current data
   React.useEffect(async () => {
     const options = {
       method: 'GET',
@@ -57,6 +61,7 @@ export const EditQuestion = () => {
       }
     };
     const data = await apiRequest('/admin/quiz/' + gameId, options)
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
@@ -77,6 +82,11 @@ export const EditQuestion = () => {
     }
   }, []);
 
+  const openEditDialog = (index) => {
+    setEditDialogOpen(true);
+    setEditDialogAnswer(quizQuestion.answers[index].answer)
+    setEditIndex(index);
+  }
   const openAddDialog = () => {
     setAddDialogOpen(true);
   };
@@ -84,6 +94,11 @@ export const EditQuestion = () => {
   const closeAddDialog = () => {
     setAddDialogOpen(false);
     setDialogAnswer('');
+  };
+
+  const closeEditDialog = () => {
+    setEditDialogOpen(false);
+    setEditDialogAnswer('');
   };
 
   const updateType = (event) => {
@@ -110,8 +125,14 @@ export const EditQuestion = () => {
     ));
   };
 
+  const editAnswer = () => {
+    const temp = quizQuestion;
+    quizQuestion.answers[editIndex] = { answer: editDialogAnswer, correct: quizQuestion.answers[editIndex].correct };
+    setQuizQuestion(temp);
+    setEditDialogOpen(false);
+  };
+
   async function saveQuestion () {
-    console.log('SV')
     const correctAnswers = quizQuestion.answers.filter((answer) =>
       answer.correct === true
     ).length
@@ -120,6 +141,7 @@ export const EditQuestion = () => {
       setters.setErrorMessage('Single choice must have 1 correct answer');
       setters.setErrorOpen(true);
       return;
+      // We allow multiple choice to have 1 as it could be a trick by the host!
     } else if (quizQuestion.type === 'multiple' && correctAnswers < 1) {
       setters.setErrorMessage('Multiple choice must have at least 1 correct answer');
       setters.setErrorOpen(true);
@@ -155,6 +177,7 @@ export const EditQuestion = () => {
     };
     const data = await apiRequest('/admin/quiz/' + gameId, options)
 
+    if (data.error === 'Invalid token') localStorage.removeItem('token')
     if (data.error) {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
@@ -178,6 +201,9 @@ export const EditQuestion = () => {
           <Typography variant="h6" sx={{ marginTop: '20px' }} id="answers-heading">
             Answers
           </Typography>
+        <Typography variant="caption">
+          Select the correct answers
+        </Typography>
           <Divider />
           <List>
             {quizQuestion.answers &&
@@ -189,11 +215,12 @@ export const EditQuestion = () => {
                     answerData={answer}
                     onSetChecked={(value) => updateChecked(value, index)}
                     onDelete={() => deleteAnswer(index)}
+                    editAnswer={() => openEditDialog(index)}
                   />
                 );
               })}
           </List>
-          <Button onClick={openAddDialog} aria-label="Add Option">
+          <Button id="add-new-answer" onClick={openAddDialog} aria-label="Add Option">
             Add Option
           </Button>
         </Box>
@@ -284,11 +311,11 @@ export const EditQuestion = () => {
           <DialogTitle id="add-answer-dialog">New Answer</DialogTitle>
           <DialogContent>
             <FormControl variant="standard">
-              <InputLabel htmlFor="answer-input">
+              <InputLabel htmlFor="add-answer-input">
                 Answer
               </InputLabel>
               <Input
-                id="answer-input"
+                id="add-answer-input"
                 type="text"
                 value={dialogAnswer}
                 onChange={(event) => setDialogAnswer(event.target.value)}
@@ -300,6 +327,35 @@ export const EditQuestion = () => {
           <Button onClick={() => addNewAnswer()}>Submit</Button>
         </DialogActions>
       </Dialog>
+      <Dialog
+          open={editDialogOpen}
+          onClose={closeEditDialog}
+          aria-labelledby="edit-answer-dialog"
+        >
+          <DialogTitle id="edit-answer-dialog">Edit Answer</DialogTitle>
+          <DialogContent>
+            <FormControl variant="standard">
+              <InputLabel htmlFor="edit-answer-input">
+                Answer
+              </InputLabel>
+              <Input
+                id="edit-answer-input"
+                type="text"
+                value={editDialogAnswer}
+                onChange={(event) => setEditDialogAnswer(event.target.value)}
+              />
+            </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeEditDialog}>Cancel</Button>
+          <Button onClick={() => editAnswer()}>Submit</Button>
+        </DialogActions>
+      </Dialog>
+      <footer>
+        <Typography variant="subtitle2" align="center" sx={{ m: 5 }}>
+          © 2023 VENTRICOLUMNA
+        </Typography>
+      </footer>
     </main>
   )
 }
