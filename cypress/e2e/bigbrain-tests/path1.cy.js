@@ -17,19 +17,19 @@ context('Happy Path - as described in spec', () => {
     const email = 'jane.doe@example.com';
     const password = 'password123';
     
-    cy.get('Input[name=name]')
+    cy.get('input[name=name]')
       .focus()
       .type(name);
 
-    cy.get('Input[name=email]')
+    cy.get('input[name=email]')
       .focus()
       .type(email);
 
-    cy.get('Input[name=password]')
+    cy.get('input[name=password]')
       .focus()
       .type(password);
 
-    cy.get('Input[name=confirm-password]')
+    cy.get('input[name=confirm-password]')
       .focus()
       .type(password);
 
@@ -78,6 +78,8 @@ context('Happy Path - as described in spec', () => {
 
     cy.get('input[type="file"]')
       .selectFile("cypress/test-assets/bird.jpeg", {force:true});
+
+    cy.get('#quiz-image').should('be.visible');
     
     // Clear or type({selectall}{backspace}) does not work
     cy.get('input[name="game-name"]')
@@ -130,7 +132,33 @@ context('Happy Path - as described in spec', () => {
       .click();
 
     cy.url().should('include', 'viewgame');
+  });
+
+  it('Logout', () => {
+    cy.get('#settings-button')
+      .click()
+
+    cy.contains('li', 'Logout')
+    .click()
+
+    cy.url().should('include', 'login');
   })
 
+  it('Login', () => {
+    const email = 'jane.doe@example.com';
+    const password = 'password123';
 
+    cy.get('input[name=email]')
+      .focus()
+      .type(email);
+
+    cy.get('input[name=password]')
+      .focus()
+      .type(password);
+
+    cy.get('#login-button')
+      .click();
+
+    cy.url().should('include', 'dashboard');
+  })
 })
