@@ -3,20 +3,21 @@ import {
   InputLabel,
   FormControl,
   Input,
-  Typography,
-  styled
+  Typography
 } from '@mui/material';
 import React from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import { FlexDiv } from '../utilities/helpers';
+
 export const AnswerInput = ({ answerData, index, updateAnswer, deleteAnswer }) => {
   const [localAnswer, setLocalAnswer] = React.useState(answerData.answer);
 
-  const FlexDiv = styled('div')({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  });
+  // const FlexDiv = styled('div')({
+  //   display: 'flex',
+  //   alignItems: 'center',
+  //   justifyContent: 'center'
+  // });
 
   const handleBlur = (event, index) => {
     updateAnswer(event, index);

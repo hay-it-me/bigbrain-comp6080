@@ -10,12 +10,12 @@ import {
   Dialog,
   DialogActions,
   Grid,
-  Typography
+  Typography,
 } from '@mui/material';
 import React from 'react';
 // import ResponsiveAppBar from '../components/Navbar';
 import { QuizCard } from '../components/QuizCard';
-import { apiRequest, FlexDiv } from '../utilities/helpers'
+import { FlexDiv, apiRequest } from '../utilities/helpers'
 import { useContext, Context } from '../context';
 
 export const Dashboard = () => {
@@ -114,7 +114,7 @@ export const Dashboard = () => {
               <Input
                 id="new-game-name"
                 name="new-game-name"
-              type="text"
+                type="text"
                 value={newGameTitle}
                 onChange={(event) => {
                   setNewGameTitle(event.target.value);

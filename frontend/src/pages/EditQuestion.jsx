@@ -3,7 +3,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   FormControl,
   Input,
   Dialog,
@@ -20,7 +19,7 @@ import {
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import React from 'react';
 import { useContext, Context } from '../context';
-import { apiRequest } from '../utilities/helpers';
+import { apiRequest, FlexDiv } from '../utilities/helpers';
 import { AnswerListItem } from '../components/AnswerListItem'
 import { QuestionDetails } from '../components/QuestionDetails';
 
@@ -77,12 +76,6 @@ export const EditQuestion = () => {
       }
     }
   }, []);
-
-  const FlexDiv = styled('div')({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  });
 
   const openAddDialog = () => {
     setAddDialogOpen(true);
@@ -178,63 +171,6 @@ export const EditQuestion = () => {
     })
   }
 
-  // const AnswerInput = ({ answerData, index }) => {
-  //   return (
-  //     <FlexDiv>
-  //       <FormControl variant="standard" >
-  //         <InputLabel htmlFor={'answer-input-' + index} />
-  //         <Input
-  //           id={'answer-input-' + index}
-  //           type="text"
-  //           value={answerData.answer}
-  //           onChange={(event) => updateAnswer(event, index)}
-  //         />
-  //         <Typography>
-  //           {index}
-  //         </Typography>
-  //       </FormControl>
-  //       <IconButton>
-  //         <DeleteIcon id={'delete-answer-' + index} edge="end" aria-label="delete" onClick={() => deleteAnswer(index)}/>
-  //       </IconButton>
-  //     </FlexDiv>
-  //   )
-  // }
-
-  // const QuizAnswers = () => {
-  //   return (
-  //     <>
-  //       {quizQuestion && quizQuestion.answers.map((answerData, index) => {
-  //         console.log(answerData);
-  //         console.log(index);
-  //         return (
-  //           <FlexDiv key={index}>
-  //             <FormControl variant="standard">
-  //               <InputLabel htmlFor={'answer-input-' + index} />
-  //               <Input
-  //                 id={'answer-input-' + index}
-  //                 type="text"
-  //                 value={answerData.answer}
-  //                 onChange={(event) => updateAnswer(event.target.value, index)}
-  //               />
-  //               <Typography>
-  //                 {index}
-  //               </Typography>
-  //             </FormControl>
-  //             <IconButton
-  //               id={'delete-answer-' + index}
-  //               edge="end"
-  //               aria-label="delete"
-  //               onClick={() => deleteAnswer(index)}
-  //             >
-  //               <DeleteIcon />
-  //             </IconButton>
-  //           </FlexDiv>
-  //         )
-  //       })}
-  //     </>
-  //   )
-  // }
-
   const QuizAnswers = () => {
     return (
       <>
@@ -265,95 +201,108 @@ export const EditQuestion = () => {
           </Button>
         </Box>
       </>
-    )
+    );
   };
 
   return (
-    <>
-      <Grid
-        container
-        justifyContent="center"
-        alignItems="center"
-        spacing={2}
-      >
-        <Grid item xs={12} sm={6}>
-          <Box sx={{ mt: 5, minWidth: 275 }}>
-          <FlexDiv>
-            <Typography variant="h4" sx={{ marginBottom: '20px' }}>
-              { quiz.name}
-            </Typography>
-          </FlexDiv>
-          <FlexDiv>
-            <Typography variant="h6" sx={{ marginBottom: '20px' }}>
-              { 'Question ' + (Number(questionId) + 1) }
-            </Typography>
-          </FlexDiv>
-            <QuestionDetails
-              question={question}
-              setQuestion={setQuestion}
-              points={points}
-              setPoints={setPoints}
-              time={time}
-              setTime={setTime}
-              mediaChoice={mediaChoice}
-              setMediaChoice={setMediaChoice}
-              img={img}
-              setImg={setImg}
-              video={video}
-              setVideo={setVideo}
-            />
-          </Box>
+    <main>
+      <header>
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          spacing={2}
+        >
+          <Grid item xs={8} sm={6}>
+            <Box sx={{ mt: 5, minWidth: 275 }}>
+              <FlexDiv>
+                <Typography variant="h4" sx={{ marginBottom: '20px' }}>
+                  {quiz.name}
+                </Typography>
+              </FlexDiv>
+              <FlexDiv>
+                <Typography variant="h6" sx={{ marginBottom: '20px' }}>
+                  {'Question ' + (Number(questionId) + 1)}
+                </Typography>
+              </FlexDiv>
+              <QuestionDetails
+                question={question}
+                setQuestion={setQuestion}
+                points={points}
+                setPoints={setPoints}
+                time={time}
+                setTime={setTime}
+                mediaChoice={mediaChoice}
+                setMediaChoice={setMediaChoice}
+                img={img}
+                setImg={setImg}
+                video={video}
+                setVideo={setVideo}
+              />
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
-      <FlexDiv>
-        <div>
+        <FlexDiv>
+          <div>
           <InputLabel id='select-type-label'>Question Type</InputLabel>
-          <Select
-            labelId='select-type-label'
-            value={quizQuestion.type}
-            onChange={updateType}
+            <Select
+              id="select-type"
+              value={quizQuestion.type}
+              onChange={updateType}
+              aria-label="Question Type"
+            >
+              <MenuItem value="single">Single Answer</MenuItem>
+              <MenuItem value="multiple">Multiple Answer</MenuItem>
+            </Select>
+          </div>
+        </FlexDiv>
+      </header>
+      <section aria-labelledby="answers-heading">
+        <FlexDiv>
+          <QuizAnswers />
+        </FlexDiv>
+      </section>
+        <FlexDiv sx={{ paddingTop: '50px' }}>
+          <Button
+            variant="contained"
+            sx={{ marginRight: '10px' }}
+            onClick={() => saveQuestion()}
           >
-            <MenuItem value='single'>Single Answer</MenuItem>
-            <MenuItem value='multiple'>Multiple Answer</MenuItem>
-          </Select>
-        </div>
-      </FlexDiv>
-      <FlexDiv>
-        <QuizAnswers />
-      </FlexDiv>
-      <FlexDiv sx={{ paddingTop: '50px' }}>
-        <Button variant="contained" sx={{ marginRight: '10px' }} onClick={() => saveQuestion()}>
-          Save Question
-        </Button>
-        <Button variant="contained" component={Link} to={'/editgame/' + gameId} sx={{ marginLeft: '10px' }}>
-          Cancel
-        </Button>
-      </FlexDiv>
-      <Dialog
-        open={addDialogOpen}
-        onClose={closeAddDialog}
-      >
-        <DialogTitle>
-          New Answer
-        </DialogTitle>
-        <DialogContent>
-          <FormControl variant="standard">
-            <InputLabel htmlFor="answer-input">
-              Answer
-            </InputLabel>
-            <Input
-              id="answer-input"
-              type="text"
-              value={dialogAnswer}
-              onChange={(event) => setDialogAnswer(event.target.value)}
-            />
-          </FormControl>
+            Save Question
+          </Button>
+          <Button
+            variant="contained"
+            component={Link}
+            to={'/editgame/' + gameId}
+            sx={{ marginLeft: '10px' }}
+          >
+            Cancel
+          </Button>
+        </FlexDiv>
+        <Dialog
+          open={addDialogOpen}
+          onClose={closeAddDialog}
+          aria-labelledby="add-answer-dialog"
+        >
+          <DialogTitle id="add-answer-dialog">New Answer</DialogTitle>
+          <DialogContent>
+            <FormControl variant="standard">
+              <InputLabel htmlFor="answer-input">
+                Answer
+              </InputLabel>
+              <Input
+                id="answer-input"
+                type="text"
+                value={dialogAnswer}
+                onChange={(event) => setDialogAnswer(event.target.value)}
+              />
+            </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={closeAddDialog}>Cancel</Button>
           <Button onClick={() => addNewAnswer()}>Submit</Button>
         </DialogActions>
       </Dialog>
-    </>
+    </main>
   )
 }

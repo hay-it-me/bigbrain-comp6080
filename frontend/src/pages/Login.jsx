@@ -15,6 +15,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useContext, Context } from '../context';
+import { FlexDiv } from '../utilities/helpers';
 
 export const Login = ({ onSuccess }) => {
   const [email, setEmail] = React.useState('');
@@ -116,7 +117,7 @@ export const Login = ({ onSuccess }) => {
         </CardContent>
       </footer>
     </React.Fragment>
-  )
+  );
 
   return (
     <>
@@ -130,13 +131,20 @@ export const Login = ({ onSuccess }) => {
         justifyContent="center"
         alignItems="center"
         spacing={2}
+        role="presentation"
       >
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={8} sm={9} md={10}>
           <Box sx={{ mt: 5, minWidth: 275 }}>
             <Card variant="outlined">{loginCard}</Card>
           </Box>
         </Grid>
       </Grid>
+      <div role="navigation">
+        <FlexDiv sx={{ flexDirection: 'column' }}>
+          <Typography variant='h5'>Or</Typography>
+          <Typography variant='h4'><Link to="/play">Join a Game</Link></Typography>
+        </FlexDiv>
+      </div>
     </>
-  )
+  );
 }

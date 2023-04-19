@@ -145,6 +145,11 @@ export const Register = ({ onSuccess }) => {
           </Typography>
         </div>
       </CardContent>
+      <footer>
+        <Typography variant="subtitle2" align="center">
+          © 2023 VENTRICOLUMNA
+        </Typography>
+      </footer>
     </React.Fragment>
   )
 
@@ -160,10 +165,12 @@ export const Register = ({ onSuccess }) => {
         justifyContent="center"
         alignItems="center"
         spacing={2}
+        lang="en"
+        role="main"
       >
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={8} sm={9} md={10}>
           <Box sx={{ mt: 5, minWidth: 275 }}>
-            <Card variant="outlined">{registerCard}</Card>
+            <Card variant="outlined" role="form" aria-label="Registration Form">{registerCard}</Card>
           </Box>
         </Grid>
       </Grid>

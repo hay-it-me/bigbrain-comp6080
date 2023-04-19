@@ -13,7 +13,7 @@ import {
   styled,
   Skeleton
 } from '@mui/material';
-import { fileToDataUrl } from '../utilities/helpers';
+import { fileToDataUrl, FlexDiv } from '../utilities/helpers';
 import React from 'react';
 import { useContext, Context } from '../context';
 
@@ -22,12 +22,6 @@ export const QuestionDetails = ({ question, setQuestion, points, setPoints, time
 
   const HiddenFileInput = styled('input')({
     display: 'none',
-  });
-
-  const FlexDiv = styled('div')({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
   });
 
   const BorderedImage = styled('img')({
@@ -51,8 +45,8 @@ export const QuestionDetails = ({ question, setQuestion, points, setPoints, time
 
   return (
   <React.Fragment>
-    <Box>
-        <FormControl variant="standard" fullWidth sx={{ mt: 2 }}>
+    <Box sx={{ textAlign: 'center' }}>
+        <FormControl variant="standard" fullWidth sx={{ m: 2 }}>
         <InputLabel htmlFor="question-question">Question</InputLabel>
         <Input
           id='question-question'
