@@ -216,7 +216,7 @@ export const EditQuestion = () => {
                 );
               })}
           </List>
-          <Button onClick={openAddDialog} aria-label="Add Option">
+          <Button id="add-new-answer" onClick={openAddDialog} aria-label="Add Option">
             Add Option
           </Button>
         </Box>
@@ -307,11 +307,11 @@ export const EditQuestion = () => {
           <DialogTitle id="add-answer-dialog">New Answer</DialogTitle>
           <DialogContent>
             <FormControl variant="standard">
-              <InputLabel htmlFor="answer-input">
+              <InputLabel htmlFor="add-answer-input">
                 Answer
               </InputLabel>
               <Input
-                id="answer-input"
+                id="add-answer-input"
                 type="text"
                 value={dialogAnswer}
                 onChange={(event) => setDialogAnswer(event.target.value)}
@@ -335,7 +335,7 @@ export const EditQuestion = () => {
                 Answer
               </InputLabel>
               <Input
-                id="answer-input"
+                id="edit-answer-input"
                 type="text"
                 value={editDialogAnswer}
                 onChange={(event) => setEditDialogAnswer(event.target.value)}

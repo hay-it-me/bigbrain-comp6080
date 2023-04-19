@@ -27,6 +27,7 @@ export const QuestionListItem = ({ question, questionId, gameId, onDelete }) => 
           </Avatar>
         </ListItemAvatar>
         <ListItemText
+          id={'question-' + questionId}
           primary={question.question}
           secondary={Object.keys(question.answers).length + ' Choices'}
         />

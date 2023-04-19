@@ -2,7 +2,7 @@ import { Box, Button, Card, CardContent, CardMedia, Checkbox, CircularProgress, 
 import React from 'react';
 import { useContext, Context } from '../context';
 import { Link, useParams } from 'react-router-dom';
-import TextField from '@mui/material/TextField/TextField';
+import TextField from '@mui/material/TextField';
 import { apiRequest } from '../utilities/helpers';
 import ReactPlayer from 'react-player';
 

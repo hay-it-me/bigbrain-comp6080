@@ -28,6 +28,7 @@ export const AnswerListItem = ({ id, answerData, onDelete, onSetChecked, editAns
           <ListItemIcon onClick={updateChecked}>
             <Checkbox
               edge="start"
+              name="correct"
               checked={answerData.correct}
               tabIndex={-1}
               disableRipple
@@ -39,10 +40,10 @@ export const AnswerListItem = ({ id, answerData, onDelete, onSetChecked, editAns
           />
         </ListItemButton>
         <ListItemSecondaryAction>
-          <IconButton edge="end" aria-label="edit" onClick={editAnswer}>
+          <IconButton edge="end" id={'edit-button-answer-' + id} aria-label="edit" onClick={editAnswer}>
             <EditIcon />
           </IconButton>
-          <IconButton edge="end" aria-label="delete" onClick={deleteAnswer}>
+          <IconButton edge="end" id={'delete-button-answer-' + id} aria-label="delete" onClick={deleteAnswer}>
             <DeleteIcon />
           </IconButton>
         </ListItemSecondaryAction>
