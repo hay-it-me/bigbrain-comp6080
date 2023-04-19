@@ -68,7 +68,7 @@ function App () {
 
   return (
     <>
-      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose} aria-label="Error message">
         <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
           {errorMessage}
         </Alert>
@@ -76,26 +76,26 @@ function App () {
       <BrowserRouter>
         <Context.Provider value={{ getters, setters }}>
           {token &&
-            <ResponsiveAppBar setLogout={() => logoutUser()} />
+            <ResponsiveAppBar setLogout={() => logoutUser()} role="navigation" aria-label="App navigation bar" />
           }
           <Routes>
             {token &&
               <>
                 <Route path="*" element={<Navigate replace to="/dashboard" />} />
-                <Route path="/dashboard" element={<Dashboard/> }/>
-                <Route path="/editgame/:gameId" element={<EditGame/>} />
-                <Route path="/editgame/:gameId/editquestion/:questionId" element={<EditQuestion onSuccess={() => console.log('success')} /> } />
-                <Route path="/viewgame/:quizId/:sessionId" element={<ViewGame/> }/>
+                <Route path="/dashboard" element={<Dashboard role="main" aria-label="Dashboard" />} />
+                <Route path="/editgame/:gameId" element={<EditGame role="main" aria-label="Edit game page" />} />
+                <Route path="/editgame/:gameId/editquestion/:questionId" element={<EditQuestion onSuccess={() => console.log('success')} role="main" aria-label="Edit question page" />} />
+                <Route path="/viewgame/:quizId/:sessionId" element={<ViewGame role="main" aria-label="View game page" />} />
               </>
             }
             {!token &&
               <>
                 <Route path="*" element={<Navigate replace to="/login" />} />
-                <Route path="/login" element={<Login onSuccess={setTokenToLocalStorage} />} />
-                <Route path="/register" element={<Register onSuccess={setTokenToLocalStorage}/>} />
+                <Route path="/login" element={<Login onSuccess={setTokenToLocalStorage} role="main" aria-label="Login page" />} />
+                <Route path="/register" element={<Register onSuccess={setTokenToLocalStorage} role="main" aria-label="Register page" />} />
               </>
             }
-            <Route path="/play/:sessionId?" element={<PlayGame/> }/>
+            <Route path="/play/:sessionId?" element={<PlayGame role="main"/> }/>
           </Routes>
         </Context.Provider>
       </BrowserRouter>

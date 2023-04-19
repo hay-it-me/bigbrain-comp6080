@@ -10,6 +10,7 @@ import {
   Dialog,
   DialogActions,
   Grid,
+  Typography,
 } from '@mui/material';
 import React from 'react';
 // import ResponsiveAppBar from '../components/Navbar';
@@ -84,63 +85,70 @@ export const Dashboard = () => {
     setNewGameTitle('');
   }
   return (
-    <>
-      {/* <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
-        <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {getters.errorMessage}
-        </Alert>
-      </Snackbar> */}
-      {/* <ResponsiveAppBar setLogout={() => logoutUser()} /> */}
-      <FlexDiv>
-        <Button
-          // sx={{ marginTop: '30px' }}
-          variant="outlined"
-          onClick={() => setNewGameDialogOpen(true)}
+    <main>
+      <header>
+        <FlexDiv>
+          <Button
+            // sx={{ marginTop: '30px' }}
+            variant="outlined"
+            onClick={() => setNewGameDialogOpen(true)}
+            aria-label="Create a New Game"
+          >
+            Create a New Game
+          </Button>
+        </FlexDiv>
+      </header>
+      <section>
+        <Dialog
+          open={newGameDialogOpen}
+          onClose={closeNewGameDialog}
+          aria-labelledby="create-new-game"
         >
-          Create a New Game
-        </Button>
-      </FlexDiv>
-      <Dialog
-        open={newGameDialogOpen}
-        onClose={closeNewGameDialog}
-      >
-        <DialogTitle>
-          Create a New Game
-        </DialogTitle>
-        <DialogContent>
-          <FormControl variant="standard" fullWidth >
-            <InputLabel htmlFor="new-game-name">Name</InputLabel>
-            <Input
-              id="new-game-name"
-              type="text"
-              value={newGameTitle}
-              onChange={(event) => {
-                setNewGameTitle(event.target.value);
-              }}
-            />
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeNewGameDialog}>Cancel</Button>
-          <Button onClick={createNewGame}>Submit</Button>
-        </DialogActions>
-      </Dialog>
-      <Grid
-        container
-        justifyContent="center"
-        spacing={2}
-        sx={{ display: 'flex' }}
-      >
-        {quizzes.map((quiz) => {
-          return <Grid item xs={12} sm={6} md={4} key={'quiz-' + quiz.id} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} >
-            <QuizCard
-              quiz={quiz}
-              rerender={() => rerenderQuizList()}
-              margin='1'
-            />
-          </Grid>
-        })}
-      </Grid>
-    </>
+          <DialogTitle id="create-new-game">
+            Create a New Game
+          </DialogTitle>
+          <DialogContent>
+            <FormControl variant="standard" fullWidth >
+              <InputLabel htmlFor="new-game-name">Name</InputLabel>
+              <Input
+                id="new-game-name"
+                type="text"
+                value={newGameTitle}
+                onChange={(event) => {
+                  setNewGameTitle(event.target.value);
+                }}
+                aria-labelledby="new-game-name"
+              />
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeNewGameDialog}>Cancel</Button>
+            <Button onClick={createNewGame}>Submit</Button>
+          </DialogActions>
+        </Dialog>
+        <Grid
+          container
+          justifyContent="center"
+          spacing={2}
+          sx={{ display: 'flex' }}
+          role="list"
+        >
+          {quizzes.map((quiz) => {
+            return <Grid item xs={12} sm={6} md={4} key={'quiz-' + quiz.id} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} role="listitem">
+              <QuizCard
+                quiz={quiz}
+                rerender={() => rerenderQuizList()}
+                margin='1'
+              />
+            </Grid>
+          })}
+        </Grid>
+      </section>
+      <footer>
+        <Typography variant="subtitle2" align="center">
+          © 2023 VENTRICOLUMNA
+        </Typography>
+      </footer>
+    </main>
   )
 }

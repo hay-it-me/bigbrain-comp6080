@@ -248,11 +248,9 @@ export const PlayGame = () => {
       const timer = setInterval(() => {
         const now = new Date();
         const secs = (now - Date.parse(question.isoTimeLastQuestionStarted)) / 1000;
-        // console.log(secs)
         setTimeRemaining(question.timelimit - secs);
-        setProgress(100 * (question.timelimit - secs / question.timelimit));
+        setProgress(100 * ((question.timelimit - secs) / question.timelimit));
         if (question.timelimit - secs <= 0) {
-          console.log('hah')
           setTimeRemaining(0);
           setProgress(0);
           if (allowed) setAllowed(false);
@@ -264,151 +262,170 @@ export const PlayGame = () => {
     }, [question, timeRemaining, progress])
 
     return (
-        <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-          <CircularProgress variant='determinate' value={progress}/>
-          <Box sx={{
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            position: 'absolute',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          >
-            <Typography variant='caption' component="div" color="text.secondary">
-              {Math.floor(timeRemaining)}
-            </Typography>
+      <section aria-label="Time Component" role="timer">
+        <div aria-valuemax={question.timelimit} aria-valuemin="0" aria-valuenow={timeRemaining} aria-valuetext={`${timeRemaining} seconds left`}>
+          <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+            <CircularProgress variant='determinate' value={progress} />
+            <Box sx={{
+              top: 0,
+              left: 0,
+              bottom: 0,
+              right: 0,
+              position: 'absolute',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            >
+              <Typography variant='caption' component="div" color="text.secondary">
+                {Math.floor(timeRemaining)}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-    )
+        </div>
+      </section>
+    );
   }
 
   function CheckboxComponent ({ color, checked, onClick, label }) {
     return (
-      <Box borderRadius={3} onClick={onClick} sx={{ backgroundColor: color + '.dark' }}>
-        {/* Wrap the Checkbox in a FormControlLabel */}
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={checked}
-              onChange={onClick}
-              // disabled={disabled}
-              />
-            }
-          label={label}
-        />
-      </Box>
+        <Box borderRadius={3} onClick={onClick} sx={{ backgroundColor: color + '.dark' }}>
+          {/* Wrap the Checkbox in a FormControlLabel */}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={checked}
+                onChange={onClick}
+                // disabled={disabled}
+                />
+              }
+            label={label}
+          />
+        </Box>
     );
   }
 
   return (
-    <>
-      <Grid container alignItems="center" direction="column" justifyContent="center">
-        {!playerId &&
-          <>
-            <TextField
-              sx={{ margin: '10px' }}
-              id="session-code"
-              label="Session Code"
-              variant='outlined'
-              value={sessionId}
-              onChange={(event) => {
-                setSessionId(event.target.value)
-              }}
-            />
-            <TextField
-              sx={{ margin: '10px' }}
-              id="player-name"
-              label="Enter Your Name"
-              variant='outlined'
-              value={name}
-              onChange={(event) => {
-                setName(event.target.value)
-              }}
-            />
-            <Button
-              variant="outlined"
-              onClick={joinGame}
-            >
-              Join Game
-            </Button>
-          </>
-        }
-        {playerId && !started &&
-          <>
-            <Typography variant="h4">Game has not begun. Please Wait.</Typography>
-            <CircularProgress />
-          </>
-        }
-        {started && !ended &&
-          <>
-            <Typography variant="h3">{question.question}</Typography>
-            {(question.videourl !== '' || question.photosrc !== '') &&
-              <Card>
-                <CardContent>
-                  {question.videourl !== '' &&
-                    <ReactPlayer url={question.videourl}/>
-                  }
-                  {question.photosrc !== '' &&
-                    <img src={question.photosrc}/>
-                  }
-                </CardContent>
-              </Card>
-            }
+    <main>
+      <header>
+      <Typography variant='h3'>Play a Game</Typography>
+      </header>
+      <section aria-label="Game">
+        <Grid container alignItems="center" direction="column" justifyContent="center">
+          {!playerId && (
+            <>
+              <TextField
+                sx={{ margin: '10px' }}
+                id="session-code"
+                name="session-code"
+                aria-required="true"
+                label="Session Code"
+                variant='outlined'
+                value={sessionId}
+                onChange={(event) => {
+                  setSessionId(event.target.value)
+                }}
+              />
+              <TextField
+                sx={{ margin: '10px' }}
+                id="player-name"
+                name="player-name"
+                aria-required="true"
+                label="Enter Your Name"
+                variant='outlined'
+                value={name}
+                onChange={(event) => {
+                  setName(event.target.value)
+                }}
+              />
+              <Button
+                variant="outlined"
+                role="button"
+                aria-label="Join Game"
+                onClick={joinGame}
+              >
+                Join Game
+              </Button>
+            </>
+          )}
+          {playerId && !started && (
+            <>
+              <Typography variant="h4">Game has not begun. Please Wait.</Typography>
+              <CircularProgress />
+            </>
+          )}
+          {started && !ended && (
+            <>
+              <Typography variant="h3">{question.question}</Typography>
+              {(question.videourl !== '' || question.photosrc !== '') && (
+                <Card>
+                  <CardContent>
+                    {question.videourl !== '' && (
+                      <ReactPlayer url={question.videourl} alt="Video Question" />
+                    )}
+                    {question.photosrc !== '' && (
+                      <img src={question.photosrc} alt="Image Question" />
+                    )}
+                  </CardContent>
+                </Card>
+              )}
 
-            <TimeComponent question={question}/> <br/>
-            {question.answers.map((answer, index) => {
-              console.log(correct, answer.answer, correct.includes(answer.answer))
-              if (question.type === 'single') {
+              <TimeComponent question={question}/> <br/>
+              {question.answers.map((answer, index) => {
+                console.log(correct, answer.answer, correct.includes(answer.answer))
+                if (question.type === 'single') {
+                  return (
+                    <>
+                      <section key={'option-' + index} aria-label="Single Answer Option">
+                        <Button variant='contained' color={correct.includes(answer.answer) ? 'success' : 'primary'} key={question + index} onClick={() => selectSingleAnswer(answer.answer, !allowed)} >{answer.answer}</Button>
+                      </section><br/>
+                    </>
+                  )
+                } else {
+                  return (
+                    <>
+                      <section key={'option-' + index} aria-label="Multiple Answer Option">
+                        <CheckboxComponent color={correct.includes(answer.answer) ? 'success' : 'primary'} checked={selected.includes(answer.answer)} key={question + index} onClick={() => selectMultiAnswer(answer.answer, !allowed)} label={answer.answer} />
+                      </section><br/>
+                    </>
+                  )
+                }
+              })}
+            </>
+          )}
+          {ended && (
+            <>
+              <Typography variant="h3">Results</Typography>
+              {results.map((result, index) => {
+                const answerRes = result.correct ? 'correct!' : 'incorrect.'
                 return (
                   <>
-                    <Button variant='contained' color={correct.includes(answer.answer) ? 'success' : 'primary'} key={question + index} onClick={() => selectSingleAnswer(answer.answer, !allowed)} >{answer.answer}</Button><br/>
-                  </>
-                )
-              } else {
-                return (
-                  <>
-                    <CheckboxComponent color={correct.includes(answer.answer) ? 'success' : 'primary'} checked={selected.includes(answer.answer)} key={question + index} onClick={() => selectMultiAnswer(answer.answer, !allowed)} label={answer.answer} /><br/>
-                  </>
-                )
-              }
-            })}
-          </>
-        }
-        {ended &&
-          <>
-            <Typography variant="h3">Results</Typography>
-            {results.map((result, index) => {
-              const answerRes = result.correct ? 'correct!' : 'incorrect.'
-              return (
-                <>
-                  <Typography variant='h4'>{'Question ' + (index + 1) }</Typography>
-                  <Grid container justifyContent="center" spacing={2} columns={12}>
-                    <Grid item justifyContent="center" xs={5}>
-                      <Typography variant='h5' sx={{ textAlign: 'center' }} >You Answered:</Typography>
-                      {result.answerIds.map((answer) => {
-                        return (
-                          <>
-                            <Typography sx={{ textAlign: 'center', overflowWrap: 'break-word' }}>{answer}</Typography>
-                          </>
-                        )
-                      })}
-                      <Typography variant='h6' sx={{ textAlign: 'center' }} >This was {answerRes}</Typography>
+                    <Typography variant='h4'>{'Question ' + (index + 1) }</Typography>
+                    <Grid container justifyContent="center" spacing={2} columns={12}>
+                      <Grid item justifyContent="center" xs={5}>
+                        <Typography variant='h5' sx={{ textAlign: 'center' }} >You Answered:</Typography>
+                        {result.answerIds.map((answer) => {
+                          return (
+                            <>
+                              <Typography sx={{ textAlign: 'center', overflowWrap: 'break-word' }}>{answer}</Typography>
+                            </>
+                          )
+                        })}
+                        <Typography variant='h6' sx={{ textAlign: 'center' }} >This was {answerRes}</Typography>
 
+                      </Grid>
+                      {/* <Grid item justifyContent="center" xs={5}>
+                        <Typography variant='h5'>Your Answers</Typography>
+                        <Typography sx={{ textAlign: 'center', overflowWrap: 'break-word' }}>b</Typography>
+                      </Grid> */}
                     </Grid>
-                    {/* <Grid item justifyContent="center" xs={5}>
-                      <Typography variant='h5'>Your Answers</Typography>
-                      <Typography sx={{ textAlign: 'center', overflowWrap: 'break-word' }}>b</Typography>
-                    </Grid> */}
-                  </Grid>
-                </>
-              )
-            })}
-          </>
-        }
-      </Grid>
-    </>
+                  </>
+                )
+              })}
+            </>
+          )}
+        </Grid>
+      </section>
+    </main>
   )
 }

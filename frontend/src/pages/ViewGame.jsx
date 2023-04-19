@@ -143,76 +143,85 @@ export const ViewGame = () => {
   }
 
   return (
-    // <>
-    <Grid container alignItems="center" direction="column" justifyContent="center">
-      {active && <Typography variant="h4">Game In Progress!</Typography>}
-      {active && <Button
-        sx={{ marginTop: '30px' }}
-        variant="outlined"
-        onClick={advanceGame}
-      >
-      Next Question
-      </Button>}
-      {active && <Button
-        sx={{ marginTop: '30px' }}
-        variant="outlined"
-        onClick={endGame}
-      >
-      End Game
-      </Button>}
-      {!active &&
-        <Grid item xs={12} sm={6} md={8} style={{ textAlign: 'center' }}>
-          <Typography variant="h3">Results</Typography><br />
-          <Typography variant="h4">Top Players</Typography>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>User</TableCell>
-                  <TableCell align="right" >Points</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {userPoints.slice(0, 5).map(data => {
-                  return (
-                    <TableRow key={data}>
-                      <TableCell>{data.user}</TableCell>
-                      <TableCell align='right'>{data.points}</TableCell>
+    <main>
+      <section aria-label="Game Container">
+        <Grid container alignItems="center" direction="column" justifyContent="center">
+          {active && <header><Typography variant="h4">Game In Progress!</Typography></header>}
+          {active && <Button
+            sx={{ marginTop: '30px' }}
+            variant="outlined"
+            onClick={advanceGame}
+            aria-label="Next Question"
+          >
+            Next Question
+          </Button>}
+          {active && <Button
+            sx={{ marginTop: '30px' }}
+            variant="outlined"
+            onClick={endGame}
+            aria-label="End Game"
+          >
+            End Game
+          </Button>}
+          {!active &&
+            <Grid item xs={12} sm={6} md={8} style={{ textAlign: 'center' }}>
+              <header>
+                <Typography variant="h3">Results</Typography>
+                <br />
+                <Typography variant="h4">Top Players</Typography>
+              </header>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>User</TableCell>
+                      <TableCell align="right">Points</TableCell>
                     </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Typography variant="h4">Percentage Correct</Typography>
-          <ResponsiveContainer width="90%" height={500}>
-            <BarChart title='% Correct' data={correct}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey='question'>
-              </XAxis>
-              <YAxis>
-              </YAxis>
-              <Tooltip />
-              <Legend />
-              <Bar dataKey='correct' fill='#008800' />
-            </BarChart>
-          </ResponsiveContainer>
-          <Typography variant="h4">Average Time Taken (seconds) </Typography>
-          <ResponsiveContainer width="90%" height={500}>
-            <BarChart title='% Correct' data={time}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey='question'>
-              </XAxis>
-              <YAxis>
-              </YAxis>
-              <Tooltip />
-              <Legend />
-              <Bar dataKey='time' fill='#ebc333' />
-            </BarChart>
-          </ResponsiveContainer>
+                  </TableHead>
+                  <TableBody>
+                    {userPoints.slice(0, 5).map(data => {
+                      return (
+                        <TableRow key={data}>
+                          <TableCell>{data.user}</TableCell>
+                          <TableCell align='right'>{data.points}</TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <header>
+                <Typography variant="h4">Percentage Correct</Typography>
+              </header>
+              <ResponsiveContainer width="90%" height={500} role="figure" aria-label="Percentage Correct">
+                <BarChart title='% Correct' data={correct}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey='question' aria-label="Questions" />
+                  <YAxis aria-label="Percentage" />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey='correct' fill='#008800' />
+                </BarChart>
+              </ResponsiveContainer>
+              <header>
+                <Typography variant="h4">Average Time Taken (seconds)</Typography>
+              </header>
+              <ResponsiveContainer width="90%" height={500} role="figure" aria-label="Average Time Taken">
+                <BarChart title='% Correct' data={time}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey='question' aria-label="Questions" />
+                  <YAxis aria-label="Seconds" />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey='time' fill='#ebc333' />
+                </BarChart>
+              </ResponsiveContainer>
+            </Grid>
+          }
         </Grid>
-      }
-    </Grid>
-    // {/* </> */}
+      </section>
+      <footer>
+      </footer>
+    </main>
   )
 }
