@@ -118,12 +118,6 @@ export const EditGame = () => {
     }
   }, [quizQuestions, updateName, quizThumbnail])
 
-  const FlexDiv = styled('div')({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  })
-
   const HiddenFileInput = styled('input')({
     display: 'none',
   });
@@ -219,7 +213,7 @@ export const EditGame = () => {
         </Button>
         <FormControl variant="standard" >
           <Input
-            id="game-name"
+            id="game-name-input"
             name="game-name"
             type="text"
             value={quizName}

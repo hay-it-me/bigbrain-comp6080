@@ -53,50 +53,68 @@ export const Login = ({ onSuccess }) => {
 
   const loginCard = (
     <React.Fragment>
-      <CardContent>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-        }}>
-          <SchoolIcon sx={{ mr: 1 }} />
-          <Typography component="h3">
-            Big Brain
-          </Typography>
-        </div>
-        <div>
-          <FormControl variant="standard" fullWidth sx={{ mt: 2 }}>
-            <InputLabel htmlFor="login-email">Email</InputLabel>
-            <Input
-              id="login-email"
-              value={email}
-              type="email"
-              onChange={(event) => {
-                setEmail(event.target.value);
-              }}
-            />
-          </FormControl>
-        </div>
-        <div>
-          <FormControl variant="standard" fullWidth sx={{ mt: 2 }}>
-            <InputLabel htmlFor="login-password">Password</InputLabel>
-            <Input
-              id="login-password"
-              type="password"
-              value={password}
-              onChange={(event) => {
-                setPassword(event.target.value);
-              }}
-            />
-          </FormControl>
-        </div>
-        <Button sx={{ mt: 1, mb: 1 }} onClick={loginUser}>Log In</Button>
-        <div>
-          <Typography variant="subtitle2" >
+      <header role="banner">
+        <CardContent>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}>
+            <SchoolIcon sx={{ mr: 1 }} />
+            <Typography component="h3">
+              Big Brain
+            </Typography>
+          </div>
+        </CardContent>
+      </header>
+      <main role="main">
+        <section aria-labelledby="login-section">
+          <Typography variant="h5" id="login-section" sx={{ ml: 2 }}>Login</Typography>
+          <div>
+            <FormControl variant="standard" fullWidth sx={{ ml: 2 }}>
+              <InputLabel htmlFor="login-email">Email</InputLabel>
+              <Input
+                id="login-email"
+                value={email}
+                type="email"
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                }}
+                aria-label="Email"
+                required
+              />
+            </FormControl>
+          </div>
+          <div>
+            <FormControl variant="standard" fullWidth sx={{ ml: 2 }}>
+              <InputLabel htmlFor="login-password">Password</InputLabel>
+              <Input
+                id="login-password"
+                type="password"
+                value={password}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                }}
+                aria-label="Password"
+                required
+              />
+            </FormControl>
+          </div>
+          <Button sx={{ m: 2 }} onClick={loginUser}>Log In</Button>
+        </section>
+        <aside role="complementary">
+          <Typography variant="subtitle2" sx={{ ml: 2 }}>
             Don&apos;t have an account? Create one <Link id="register-page" to="/register">here</Link>
           </Typography>
-        </div>
-      </CardContent>
+        </aside>
+      </main>
+      <footer role="contentinfo">
+        <CardContent>
+          <Typography variant="caption">
+            &copy; 2023 VENTRICOLUMNA
+          </Typography>
+        </CardContent>
+      </footer>
     </React.Fragment>
   )
 

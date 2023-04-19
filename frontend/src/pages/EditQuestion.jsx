@@ -238,31 +238,32 @@ export const EditQuestion = () => {
   const QuizAnswers = () => {
     return (
       <>
-      <Box sx={{ maxWidth: '500px', width: '100%' }}>
-        <Typography variant="h6" sx={{ marginTop: '20px' }}>
-          Answers
-        </Typography>
+        <Box sx={{ maxWidth: '500px', width: '100%' }}>
+          <Typography variant="h6" sx={{ marginTop: '20px' }} id="answers-heading">
+            Answers
+          </Typography>
         <Typography variant="caption">
           Select the correct answers
         </Typography>
-        <Divider />
-        <List >
-          {quizQuestion.answers && quizQuestion.answers.map((answer, index) => {
-            return (
-              <AnswerListItem
-              key={index}
-              id={index}
-              answerData={answer}
-              onSetChecked={(value) => updateChecked(value, index)}
-              onDelete={() => deleteAnswer(index)}
-            />
-            )
-          })}
-        </List>
-        <Button onClick={openAddDialog}>
-          Add Option
-        </Button>
-      </Box>
+          <Divider />
+          <List>
+            {quizQuestion.answers &&
+              quizQuestion.answers.map((answer, index) => {
+                return (
+                  <AnswerListItem
+                    key={index}
+                    id={index}
+                    answerData={answer}
+                    onSetChecked={(value) => updateChecked(value, index)}
+                    onDelete={() => deleteAnswer(index)}
+                  />
+                );
+              })}
+          </List>
+          <Button onClick={openAddDialog} aria-label="Add Option">
+            Add Option
+          </Button>
+        </Box>
       </>
     )
   };
