@@ -19,9 +19,7 @@ import IconButton from '@mui/material/IconButton';
 import { apiRequest, displayTime } from '../utilities/helpers'
 import { Link } from 'react-router-dom';
 import { useContext, Context } from '../context';
-// import config from '../config.json';
 
-// Creates all the quiz cards on the dashboard
 export const QuizCard = ({ quiz, rerender }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -31,7 +29,6 @@ export const QuizCard = ({ quiz, rerender }) => {
   const [endGameDialogOpen, setEndGameDialogOpen] = React.useState(false);
   const [endGameTitle, setEndGameTitle] = React.useState('');
   const [questions, setQuestions] = React.useState(null);
-  // let quiz = null;
   const { getters, setters } = useContext(Context);
   React.useEffect(async () => {
     const options = {
@@ -79,8 +76,8 @@ export const QuizCard = ({ quiz, rerender }) => {
     const data = await apiRequest('/admin/quiz/' + quiz.id, options)
     closeDeleteGameDialog();
     if (data.error) {
-      // setErrorMessage(data.error);
-      // setErrorOpen(true);
+      setters.setErrorMessage(data.error)
+      setters.setErrorOpen(true);
     } else {
       rerender(true);
     }
@@ -100,8 +97,6 @@ export const QuizCard = ({ quiz, rerender }) => {
       setters.setErrorMessage(data.error)
       setters.setErrorOpen(true);
     } else {
-      // setSessionCode('TODO')
-      // console.log('getting')
       const optionsGet = {
         method: 'GET',
         headers: {
@@ -151,7 +146,6 @@ export const QuizCard = ({ quiz, rerender }) => {
         setSessionCode(dataGet.active)
         rerender(true);
       }
-      // TODO
     }
   }
   return (
@@ -188,10 +182,13 @@ export const QuizCard = ({ quiz, rerender }) => {
                 }}
               >
                 <MenuItem key='Edit Game' onClick={handleCloseMenu} component={Link} to={'/editgame/' + quiz.id}>
-                      <Typography textAlign="center">Edit Game</Typography>
+                    <Typography textAlign="center">Edit Game</Typography>
                   </MenuItem>
                 <MenuItem key='Delete Game' onClick={openDeleteGameDialog} >
-                    <Typography textAlign="center" color="red">Delete Game</Typography>
+                  <Typography textAlign="center" color="red">Delete Game</Typography>
+                </MenuItem>
+                <MenuItem key='View Past Games' onClick={handleCloseMenu} component={Link} to={'/viewpastsessions/' + quiz.id}>
+                  <Typography textAlign="center">View Past Games</Typography>
                 </MenuItem>
               </Menu>
             </>
@@ -206,12 +203,6 @@ export const QuizCard = ({ quiz, rerender }) => {
             alt={quiz.name + ' thumbnail'}
         />
         <CardContent>
-            {/* <Typography
-            variant="body1"
-            color="text.secondary"
-            >
-            {quiz.owner}
-            </Typography> */}
             {questions
               ? <Typography
               variant="body1"

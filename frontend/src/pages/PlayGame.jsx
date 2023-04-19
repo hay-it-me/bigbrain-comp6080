@@ -1,12 +1,10 @@
-import { Box, Button, Card, CardContent, Checkbox, CircularProgress, FormControlLabel, Grid, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, CardMedia, Checkbox, CircularProgress, FormControlLabel, Grid, Typography } from '@mui/material';
 import React from 'react';
 import { useContext, Context } from '../context';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import TextField from '@mui/material/TextField/TextField';
 import { apiRequest } from '../utilities/helpers';
 import ReactPlayer from 'react-player';
-// import lodash from 'lodash';
-// import TimeComponent from '../components/TimeComponent';
 
 export const PlayGame = () => {
   const { setters } = useContext(Context);
@@ -25,8 +23,6 @@ export const PlayGame = () => {
     photosrc: 'src',
     isoTimeLastQuestionStarted: '',
   });
-  // const [timeRemaining, setTimeRemaining] = React.useState(100);
-  // const [progress, setProgress] = React.useState(0);
   const [allowed, setAllowed] = React.useState(true);
   const [selected, setSelected] = React.useState([]);
   const [correct, setCorrect] = React.useState([]);
@@ -38,8 +34,26 @@ export const PlayGame = () => {
       setSessionId(params.sessionId);
     }
   }, []);
-  // console.log(getters, setters, sessionId);
-
+  const reset = () => {
+    setPlayerId('');
+    setSessionId('');
+    setStarted(false);
+    setEnded(false);
+    setQuestion({
+      question: '',
+      type: '',
+      answers: [],
+      timelimit: 0,
+      points: 0,
+      videourl: 'url',
+      photosrc: 'src',
+      isoTimeLastQuestionStarted: '',
+    });
+    setAllowed(true);
+    setSelected([]);
+    setCorrect([]);
+    setResults([]);
+  }
   const joinGame = async () => {
     const options = {
       method: 'POST',
@@ -107,10 +121,7 @@ export const PlayGame = () => {
             setters.setErrorMessage(data.error)
             setters.setErrorOpen(true);
           }
-          // console.log(data, setEnded)
         } else {
-          // console.log(question)
-          // console.log(data.question !== question)
           if (!_.isEqual(data.question, question)) {
             setCorrect([])
             setQuestion(data.question);
@@ -140,13 +151,13 @@ export const PlayGame = () => {
           console.log('ended')
           setEnded(true);
         } else if (data.error === 'Question time has not been completed') {
-          setters.setErrorMessage(data.error)
-          setters.setErrorOpen(true);
           setAllowed(true);
           setTimeout(() => { setAllowed(false) }, 100)
+        } else {
+          setters.setErrorMessage(data.error);
+          setters.setErrorOpen(true);
         }
       } else {
-        // console.log(data.answerIds);
         setCorrect(data.answerIds)
       }
     }
@@ -166,8 +177,6 @@ export const PlayGame = () => {
         setters.setErrorOpen(true);
       } else {
         setResults(data);
-        // console.log(data.answerIds);
-        // setCorrect(data.answerIds)
       }
     }
   }, [ended]);
@@ -193,8 +202,6 @@ export const PlayGame = () => {
         console.log('success')
       }
     }
-    // TODO ANSWER QN
-    // setAllowed(false);
   }
   const selectMultiAnswer = async (answer, disabled) => {
     console.log(selected)
@@ -214,7 +221,6 @@ export const PlayGame = () => {
         console.log(selected)
       }
       console.log(selected);
-      // TODO ANSWER QN
     }
   }
   const sendMultiAnswer = async () => {
@@ -290,13 +296,11 @@ export const PlayGame = () => {
   function CheckboxComponent ({ color, checked, onClick, label }) {
     return (
         <Box borderRadius={3} onClick={onClick} sx={{ backgroundColor: color + '.dark' }}>
-          {/* Wrap the Checkbox in a FormControlLabel */}
           <FormControlLabel
             control={
               <Checkbox
                 checked={checked}
                 onChange={onClick}
-                // disabled={disabled}
                 />
               }
             label={label}
@@ -311,7 +315,7 @@ export const PlayGame = () => {
       <Typography variant='h3'>Play a Game</Typography>
       </header>
       <section aria-label="Game">
-        <Grid container alignItems="center" direction="column" justifyContent="center">
+        <Grid container alignItems="center" direction="column" justifyContent="center" sx={{ width: '90%' }}>
           {!playerId && (
             <>
               <TextField
@@ -358,13 +362,13 @@ export const PlayGame = () => {
             <>
               <Typography variant="h3">{question.question}</Typography>
               {(question.videourl !== '' || question.photosrc !== '') && (
-                <Card>
-                  <CardContent>
+                <Card sx={{ width: '90%' }}>
+                  <CardContent sx={{ width: '100%', height: '100%' }}>
                     {question.videourl !== '' && (
                       <ReactPlayer url={question.videourl} alt="Video Question" />
                     )}
                     {question.photosrc !== '' && (
-                      <img src={question.photosrc} alt="Image Question" />
+                      <CardMedia component="img" image={question.photosrc} alt="Image Question" />
                     )}
                   </CardContent>
                 </Card>
@@ -395,15 +399,15 @@ export const PlayGame = () => {
           )}
           {ended && (
             <>
-              <Typography variant="h3">Results</Typography>
+              <Typography variant="h3">Results</Typography><br/>
               {results.map((result, index) => {
                 const answerRes = result.correct ? 'correct!' : 'incorrect.'
                 return (
                   <>
-                    <Typography variant='h4'>{'Question ' + (index + 1) }</Typography>
+                    <Typography variant='h5'>{'Question ' + (index + 1) }</Typography>
                     <Grid container justifyContent="center" spacing={2} columns={12}>
                       <Grid item justifyContent="center" xs={5}>
-                        <Typography variant='h5' sx={{ textAlign: 'center' }} >You Answered:</Typography>
+                        <Typography variant='h6' sx={{ textAlign: 'center' }} >You Answered:</Typography>
                         {result.answerIds.map((answer) => {
                           return (
                             <>
@@ -411,21 +415,23 @@ export const PlayGame = () => {
                             </>
                           )
                         })}
-                        <Typography variant='h6' sx={{ textAlign: 'center' }} >This was {answerRes}</Typography>
+                        <Typography variant='h6' sx={{ textAlign: 'center' }} >This was {answerRes}</Typography><br/>
 
                       </Grid>
-                      {/* <Grid item justifyContent="center" xs={5}>
-                        <Typography variant='h5'>Your Answers</Typography>
-                        <Typography sx={{ textAlign: 'center', overflowWrap: 'break-word' }}>b</Typography>
-                      </Grid> */}
                     </Grid>
                   </>
                 )
               })}
+              <Button variant='contained' onClick={reset}><Link to='/play'>Play Again</Link></Button>
             </>
           )}
         </Grid>
       </section>
+      <footer>
+        <Typography variant="subtitle2" align="center" sx={{ m: 5 }}>
+          © 2023 VENTRICOLUMNA
+        </Typography>
+      </footer>
     </main>
   )
 }

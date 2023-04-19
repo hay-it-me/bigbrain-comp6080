@@ -14,18 +14,7 @@ export const ViewGame = () => {
     user: '',
     points: 0
   }]);
-  // const [results, setResults] = React.useState([{
-  //   name: '',
-  //   answers: [{
-  //     questionStartedAt: '',
-  //     answeredAt: '',
-  //     answerIds: [],
-  //     correct: false
-  //   }]
-  // }])
   const { quizId, sessionId } = useParams();
-
-  // console.log(Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, BarChart, XAxis, YAxis, Bar, Tooltip, Legend, CartesianGrid, correct, time, userPoints);
 
   const rerender = () => {
     setRerenderScreen(!rerenderScreen);
@@ -49,17 +38,15 @@ export const ViewGame = () => {
       setActive(false);
     }
   }, [rerenderScreen]);
-  // displaySession();
   const generateResults = (data, quizData) => {
     let userPointData = [];
     const correctData = [];
     const time = [];
-    // setResults(data);
     data.forEach((user) => {
       let points = 0;
       user.answers.forEach((answer, index) => {
-        if (correctData[index] === undefined) correctData[index] = { question: 'Question ' + (index + 1), correct: 0 };
-        if (time[index] === undefined) time[index] = { question: 'Question ' + (index + 1), time: 0 };
+        if (correctData[index] === undefined) correctData[index] = { question: 'Q' + (index + 1), correct: 0 };
+        if (time[index] === undefined) time[index] = { question: 'Q' + (index + 1), time: 0 };
         if (answer.correct) {
           correctData[index].correct++;
           points += Number(quizData.questions[index].points)
@@ -121,7 +108,6 @@ export const ViewGame = () => {
       setters.setErrorOpen(true);
     } else {
       rerender();
-      // console.log('ended')
     }
   }
 
@@ -145,7 +131,7 @@ export const ViewGame = () => {
   return (
     <main>
       <section aria-label="Game Container">
-        <Grid container alignItems="center" direction="column" justifyContent="center">
+        <Grid container alignItems="center" direction="column" justifyContent="center" sx={{ width: '100%' }}>
           {active && <header><Typography variant="h4">Game In Progress!</Typography></header>}
           {active && <Button
             sx={{ marginTop: '30px' }}
@@ -164,7 +150,7 @@ export const ViewGame = () => {
             End Game
           </Button>}
           {!active &&
-            <Grid item xs={12} sm={6} md={8} style={{ textAlign: 'center' }}>
+            <Grid item xs={12} sm={10} md={8} sx={{ textAlign: 'center', width: '95%' }}>
               <header>
                 <Typography variant="h3">Results</Typography>
                 <br />
@@ -179,9 +165,9 @@ export const ViewGame = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {userPoints.slice(0, 5).map(data => {
+                    {userPoints.slice(0, 5).map((data, index) => {
                       return (
-                        <TableRow key={data}>
+                        <TableRow key={data.user + '-' + index}>
                           <TableCell>{data.user}</TableCell>
                           <TableCell align='right'>{data.points}</TableCell>
                         </TableRow>
@@ -193,10 +179,10 @@ export const ViewGame = () => {
               <header>
                 <Typography variant="h4">Percentage Correct</Typography>
               </header>
-              <ResponsiveContainer width="90%" height={500} role="figure" aria-label="Percentage Correct">
+              <ResponsiveContainer width="95%" height={500} role="figure" aria-label="Percentage Correct">
                 <BarChart title='% Correct' data={correct}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey='question' aria-label="Questions" />
+                  <XAxis dataKey='question' aria-label="Questions" interval={0} />
                   <YAxis aria-label="Percentage" />
                   <Tooltip />
                   <Legend />
@@ -206,10 +192,10 @@ export const ViewGame = () => {
               <header>
                 <Typography variant="h4">Average Time Taken (seconds)</Typography>
               </header>
-              <ResponsiveContainer width="90%" height={500} role="figure" aria-label="Average Time Taken">
+              <ResponsiveContainer width="95%" height={500} role="figure" aria-label="Average Time Taken">
                 <BarChart title='% Correct' data={time}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey='question' aria-label="Questions" />
+                  <XAxis dataKey='question' aria-label="Questions" interval={0} />
                   <YAxis aria-label="Seconds" />
                   <Tooltip />
                   <Legend />
@@ -221,6 +207,9 @@ export const ViewGame = () => {
         </Grid>
       </section>
       <footer>
+        <Typography variant="subtitle2" align="center" sx={{ m: 5 }}>
+          © 2023 VENTRICOLUMNA
+        </Typography>
       </footer>
     </main>
   )

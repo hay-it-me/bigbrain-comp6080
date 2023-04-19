@@ -1,7 +1,5 @@
 import {
   Grid,
-  // Snackbar,
-  // Alert,
   FormControl,
   Input,
   Box,
@@ -17,13 +15,10 @@ import { useParams, Link } from 'react-router-dom';
 import React from 'react';
 import { apiRequest, fileToDataUrl, FlexDiv } from '../utilities/helpers';
 import { QuestionListItem } from '../components/QuestionListItem';
-// import ResponsiveAppBar from '../components/Navbar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useContext, Context } from '../context';
 
 export const EditGame = () => {
-  // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
-  // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
   const [quizQuestions, setQuizQuestions] = React.useState([]);
   const [quizName, setQuizName] = React.useState('');
   const [quizThumbnail, setQuizThumbnail] = React.useState('');
@@ -31,18 +26,6 @@ export const EditGame = () => {
   const { getters, setters } = useContext(Context);
 
   const { gameId } = useParams();
-
-  // function logoutUser () {
-  //   onLogout(true);
-  // }
-
-  // const handleErrorClose = (event, reason) => {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
-  //   setters.setErrorOpen(false);
-  // };
-
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -254,7 +237,7 @@ export const EditGame = () => {
         </Grid>
       </Grid>
       <footer>
-      <Typography variant="subtitle2" align="center">
+        <Typography variant="subtitle2" align="center" sx={{ m: 5 }}>
           © 2023 VENTRICOLUMNA
         </Typography>
       </footer>
