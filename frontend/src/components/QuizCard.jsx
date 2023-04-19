@@ -16,21 +16,39 @@ import {
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
-import { apiRequest } from '../utilities/helpers'
+import { apiRequest, displayTime } from '../utilities/helpers'
 import { Link } from 'react-router-dom';
 import { useContext, Context } from '../context';
+// import config from '../config.json';
 
 // Creates all the quiz cards on the dashboard
-export const QuizCard = ({ quiz, token, onDelete }) => {
+export const QuizCard = ({ quiz, rerender }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [startGameDialogOpen, setStartGameDialogOpen] = React.useState(false);
   const [startGameTitle, setStartGameTitle] = React.useState('');
-  const [startGameDialogCode, setStartGameDialogCode] = React.useState('');
+  const [sessionCode, setSessionCode] = React.useState('');
   const [endGameDialogOpen, setEndGameDialogOpen] = React.useState(false);
   const [endGameTitle, setEndGameTitle] = React.useState('');
-
+  const [questions, setQuestions] = React.useState(null);
+  // let quiz = null;
   const { getters, setters } = useContext(Context);
+  React.useEffect(async () => {
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${getters.token}`
+      }
+    };
+    const data = await apiRequest('/admin/quiz/' + quiz.id, options)
+    if (data.error) {
+      setters.setErrorMessage(data.error);
+      setters.setErrorOpen(true);
+    } else {
+      setQuestions(data.questions)
+    }
+  }, [])
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -54,7 +72,7 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
       method: 'DELETE',
       headers: {
         'Content-type': 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${getters.token}`
       },
       body: JSON.stringify({})
     };
@@ -64,14 +82,11 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
       // setErrorMessage(data.error);
       // setErrorOpen(true);
     } else {
-      onDelete(true);
+      rerender(true);
     }
   }
 
   const startGame = async (quizId, quizName) => {
-    setStartGameDialogOpen(true);
-    setStartGameTitle(quizName);
-    setStartGameDialogCode('TODO')
     const options = {
       method: 'POST',
       headers: {
@@ -80,9 +95,13 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
       }
     };
     const data = await apiRequest('/admin/quiz/' + quizId + '/start', options);
+    console.log(data)
     if (data.error) {
       setters.setErrorMessage(data.error)
+      setters.setErrorOpen(true);
     } else {
+      // setSessionCode('TODO')
+      // console.log('getting')
       const optionsGet = {
         method: 'GET',
         headers: {
@@ -94,29 +113,47 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
       if (dataGet.error) {
         setters.setErrorMessage(dataGet.error)
       } else {
-        setStartGameDialogCode(dataGet.active)
+        setStartGameDialogOpen(true);
+        setStartGameTitle(quizName);
+        setSessionCode(dataGet.active)
+        rerender(true);
       }
     }
   }
 
   const endGame = async (quizId, quizName) => {
-    setEndGameDialogOpen(true);
-    setEndGameTitle(quizName);
-    const options = {
-      method: 'POST',
+    const optionsGet = {
+      method: 'GET',
       headers: {
         accept: 'application/json',
         Authorization: `Bearer ${getters.token}`
       }
     };
-    const data = await apiRequest('/admin/quiz/' + quizId + '/end', options);
-    if (data.error) {
-      setters.setErrorMessage(data.error)
+    const dataGet = await apiRequest('/admin/quiz/' + quizId, optionsGet);
+    if (dataGet.error) {
+      setters.setErrorMessage(dataGet.error)
     } else {
+      const options = {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          Authorization: `Bearer ${getters.token}`
+        }
+      };
+      const data = await apiRequest('/admin/quiz/' + quizId + '/end', options);
+      if (data.error) {
+        setters.setErrorMessage(data.error)
+        setters.setErrorOpen(true);
+      } else {
+        setStartGameDialogOpen(false);
+        setEndGameDialogOpen(true);
+        setEndGameTitle(quizName);
+        setSessionCode(dataGet.active)
+        rerender(true);
+      }
       // TODO
     }
   }
-
   return (
     <>
       <Card key={quiz.id} sx={{ minWidth: 300, maxWidth: 350, margin: 2 }}>
@@ -169,19 +206,19 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
             alt={quiz.name + ' thumbnail'}
         />
         <CardContent>
-            <Typography
+            {/* <Typography
             variant="body1"
             color="text.secondary"
             >
             {quiz.owner}
-            </Typography>
-            {quiz.questions
+            </Typography> */}
+            {questions
               ? <Typography
               variant="body1"
               color="text.secondary"
             >
-            {Object.keys(quiz.questions).length} Questions
-            Time to Complete: PLACEHOLDER TXT
+            {questions.length} Questions,
+            Time to Complete: {displayTime(questions.reduce((sum, a) => sum + a.timelimit, 0))}
             </Typography>
               : <Typography
               variant="body1"
@@ -192,11 +229,25 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
             }
         </CardContent>
         <CardActions>
-          <Button
+          {!quiz.active && <Button
             onClick={() => startGame(quiz.id, quiz.name)}
-            size="small">
+            size="small"
+          >
             Start Game
-          </Button>
+          </Button>}
+          {quiz.active && <Button
+            component={Link} to={'/viewgame/' + quiz.id + '/' + quiz.active}
+            size='small'
+          >
+            View Game in Progress
+          </Button>}
+          {quiz.active && <Button
+            onClick={() => endGame(quiz.id, quiz.name)}
+            size="small"
+          >
+            End Game
+          </Button>}
+
         </CardActions>
       </Card>
       <Dialog
@@ -222,14 +273,15 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
         open={startGameDialogOpen}
       >
         <DialogTitle>
-          {'Starting Game for quiz: ' + startGameTitle}
+          {'Game started for quiz: ' + startGameTitle}
         </DialogTitle>
         <DialogContent>
-          Session Code: {startGameDialogCode}
+          Session Code: {sessionCode}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => navigator.clipboard.writeText('TODO/' + startGameDialogCode)}>Copy Session URL</Button>
-          <Button onClick={() => endGame()}>End Game</Button>
+          <Button onClick={() => navigator.clipboard.writeText('http://localhost:3000/play/' + sessionCode)}>Copy Session URL</Button>
+          <Button component={Link} to={'/viewgame/' + quiz.id + '/' + sessionCode}>View Game</Button>
+          <Button onClick={() => endGame(quiz.id, quiz.name)}>End Game</Button>
           <Button onClick={() => setStartGameDialogOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
@@ -240,11 +292,11 @@ export const QuizCard = ({ quiz, token, onDelete }) => {
           {'Game ended for quiz: ' + endGameTitle}
         </DialogTitle>
         <DialogContent>
+          Would you like to view the results?
         </DialogContent>
         <DialogActions>
-          {/* <Button onClick={() => navigator.clipboard.writeText('TODO/' + startGameDialogCode)}>Copy Session URL</Button>
-          <Button onClick={() => console.log('end')}>End Game</Button>
-          <Button onClick={() => setStartGameDialogOpen(false)}>Close</Button> */}
+          <Button component={Link} to={'/viewgame/' + quiz.id + '/' + sessionCode}>Yes</Button>
+          <Button onClick={() => setEndGameDialogOpen(false)}>No</Button>
         </DialogActions>
       </Dialog>
     </>

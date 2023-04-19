@@ -1,6 +1,6 @@
 import {
-  Snackbar,
-  Alert,
+  // Snackbar,
+  // Alert,
   Button,
   DialogTitle,
   DialogContent,
@@ -10,14 +10,15 @@ import {
   Dialog,
   DialogActions,
   Grid,
+  Typography,
 } from '@mui/material';
 import React from 'react';
-import ResponsiveAppBar from '../components/Navbar';
+// import ResponsiveAppBar from '../components/Navbar';
 import { QuizCard } from '../components/QuizCard';
-import { apiRequest } from '../utilities/helpers'
+import { FlexDiv, apiRequest } from '../utilities/helpers'
 import { useContext, Context } from '../context';
 
-export const Dashboard = ({ onLogout }) => {
+export const Dashboard = () => {
   const [quizzes, setQuizzes] = React.useState([]);
   const [newGameDialogOpen, setNewGameDialogOpen] = React.useState(false);
   const [newGameTitle, setNewGameTitle] = React.useState('');
@@ -25,20 +26,20 @@ export const Dashboard = ({ onLogout }) => {
 
   const { getters, setters } = useContext(Context);
 
-  function logoutUser () {
-    onLogout(true);
-  }
+  // function logoutUser () {
+  //   onLogout(true);
+  // }
 
   const rerenderQuizList = () => {
     setRerenderQuizzes(!rerenderQuizzes);
   }
 
-  const handleErrorClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setters.setErrorOpen(false);
-  };
+  // const handleErrorClose = (event, reason) => {
+  //   if (reason === 'clickaway') {
+  //     return;
+  //   }
+  //   setters.setErrorOpen(false);
+  // };
 
   React.useEffect(async () => {
     const options = {
@@ -84,60 +85,70 @@ export const Dashboard = ({ onLogout }) => {
     setNewGameTitle('');
   }
   return (
-    <>
-      <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
-        <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {getters.errorMessage}
-        </Alert>
-      </Snackbar>
-      <ResponsiveAppBar setLogout={() => logoutUser()} />
-      <Button
-        sx={{ marginTop: '30px' }}
-        variant="outlined"
-        onClick={() => setNewGameDialogOpen(true)}
-      >
-        Create a New Game
-      </Button>
-      <Dialog
-        open={newGameDialogOpen}
-        onClose={closeNewGameDialog}
-      >
-        <DialogTitle>
-          Create a New Game
-        </DialogTitle>
-        <DialogContent>
-          <FormControl variant="standard" fullWidth >
-            <InputLabel htmlFor="new-game-name">Name</InputLabel>
-            <Input
-              id="new-game-name"
-              type="text"
-              value={newGameTitle}
-              onChange={(event) => {
-                setNewGameTitle(event.target.value);
-              }}
-            />
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeNewGameDialog}>Cancel</Button>
-          <Button onClick={createNewGame}>Submit</Button>
-        </DialogActions>
-      </Dialog>
-      <Grid
-        container
-        justifyContent="center"
-        spacing={2}
-      >
-        {quizzes.map((quiz) => {
-          return <Grid item xs={12} sm={6} md={4} key={quiz}>
-            <QuizCard
-              quiz={quiz}
-              token={getters.token}
-              onDelete={() => rerenderQuizList()}
-            />
-          </Grid>
-        })}
-      </Grid>
-    </>
+    <main>
+      <header>
+        <FlexDiv>
+          <Button
+            // sx={{ marginTop: '30px' }}
+            variant="outlined"
+            onClick={() => setNewGameDialogOpen(true)}
+            aria-label="Create a New Game"
+          >
+            Create a New Game
+          </Button>
+        </FlexDiv>
+      </header>
+      <section>
+        <Dialog
+          open={newGameDialogOpen}
+          onClose={closeNewGameDialog}
+          aria-labelledby="create-new-game"
+        >
+          <DialogTitle id="create-new-game">
+            Create a New Game
+          </DialogTitle>
+          <DialogContent>
+            <FormControl variant="standard" fullWidth >
+              <InputLabel htmlFor="new-game-name">Name</InputLabel>
+              <Input
+                id="new-game-name"
+                type="text"
+                value={newGameTitle}
+                onChange={(event) => {
+                  setNewGameTitle(event.target.value);
+                }}
+                aria-labelledby="new-game-name"
+              />
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeNewGameDialog}>Cancel</Button>
+            <Button onClick={createNewGame}>Submit</Button>
+          </DialogActions>
+        </Dialog>
+        <Grid
+          container
+          justifyContent="center"
+          spacing={2}
+          sx={{ display: 'flex' }}
+          role="list"
+        >
+          {quizzes.map((quiz) => {
+            return <Grid item xs={12} sm={6} md={4} key={'quiz-' + quiz.id} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} role="listitem">
+              <QuizCard
+                quiz={quiz}
+                rerender={() => rerenderQuizList()}
+                margin='1'
+              />
+            </Grid>
+          })}
+        </Grid>
+      </section>
+      <footer>
+        <Typography variant="subtitle2" align="center">
+          © 2023 VENTRICOLUMNA
+        </Typography>
+      </footer>
+    </main>
   )
 }

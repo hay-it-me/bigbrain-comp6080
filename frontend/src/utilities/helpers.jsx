@@ -1,5 +1,5 @@
 import config from '../config.json';
-
+import { styled } from '@mui/material';
 export const apiRequest = async (path, options) => {
   const response = await fetch(`http://localhost:${config.BACKEND_PORT}` + path, options);
   return response.json();
@@ -26,3 +26,26 @@ export function fileToDataUrl (file) {
   });
   return dataUrlPromise;
 }
+
+export function displayTime (seconds) {
+  const timeUnits = [
+    [1, 'second', 'seconds'],
+    [60, 'minute', 'minutes'],
+    [60 * 60, 'hour', 'hours'],
+  ]
+  let displayUnit = timeUnits[0];
+  for (const unit of timeUnits) {
+    if (seconds >= unit[0]) {
+      displayUnit = unit;
+    }
+  }
+  const [divisor, label, multiLabel] = displayUnit;
+  console.log(Math.ceil(seconds / divisor) + (Math.ceil(seconds / divisor) === 1 ? label : multiLabel))
+  return Math.ceil(seconds / divisor) + ' ' + (Math.ceil(seconds / divisor) === 1 ? label : multiLabel);
+}
+
+export const FlexDiv = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center'
+})
