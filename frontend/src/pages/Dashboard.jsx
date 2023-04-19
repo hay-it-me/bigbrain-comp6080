@@ -1,6 +1,4 @@
 import {
-  // Snackbar,
-  // Alert,
   Button,
   DialogTitle,
   DialogContent,
@@ -13,7 +11,6 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
-// import ResponsiveAppBar from '../components/Navbar';
 import { QuizCard } from '../components/QuizCard';
 import { FlexDiv, apiRequest } from '../utilities/helpers'
 import { useContext, Context } from '../context';
@@ -26,20 +23,9 @@ export const Dashboard = () => {
 
   const { getters, setters } = useContext(Context);
 
-  // function logoutUser () {
-  //   onLogout(true);
-  // }
-
   const rerenderQuizList = () => {
     setRerenderQuizzes(!rerenderQuizzes);
   }
-
-  // const handleErrorClose = (event, reason) => {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
-  //   setters.setErrorOpen(false);
-  // };
 
   React.useEffect(async () => {
     const options = {
@@ -89,7 +75,6 @@ export const Dashboard = () => {
       <header>
         <FlexDiv>
           <Button
-            // sx={{ marginTop: '30px' }}
             variant="outlined"
             onClick={() => setNewGameDialogOpen(true)}
             aria-label="Create a New Game"
@@ -145,7 +130,7 @@ export const Dashboard = () => {
         </Grid>
       </section>
       <footer>
-        <Typography variant="subtitle2" align="center">
+        <Typography variant="subtitle2" align="center" sx={{ m: 5 }}>
           © 2023 VENTRICOLUMNA
         </Typography>
       </footer>

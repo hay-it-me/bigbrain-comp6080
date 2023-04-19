@@ -18,6 +18,7 @@ import { EditGame } from './pages/EditGame';
 import { EditQuestion } from './pages/EditQuestion';
 import { ViewGame } from './pages/ViewGame';
 import { PlayGame } from './pages/PlayGame';
+import { ViewPastSessions } from './pages/ViewPastSessions';
 
 function App () {
   const [token, setToken] = React.useState(localStorage.getItem('token'));
@@ -86,6 +87,7 @@ function App () {
                 <Route path="/editgame/:gameId" element={<EditGame role="main" aria-label="Edit game page" />} />
                 <Route path="/editgame/:gameId/editquestion/:questionId" element={<EditQuestion onSuccess={() => console.log('success')} role="main" aria-label="Edit question page" />} />
                 <Route path="/viewgame/:quizId/:sessionId" element={<ViewGame role="main" aria-label="View game page" />} />
+                <Route path="/viewpastsessions/:quizId" element={<ViewPastSessions role="main" aria-label="View past sessions page" />} />
               </>
             }
             {!token &&

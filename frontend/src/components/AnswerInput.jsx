@@ -13,12 +13,6 @@ import { FlexDiv } from '../utilities/helpers';
 export const AnswerInput = ({ answerData, index, updateAnswer, deleteAnswer }) => {
   const [localAnswer, setLocalAnswer] = React.useState(answerData.answer);
 
-  // const FlexDiv = styled('div')({
-  //   display: 'flex',
-  //   alignItems: 'center',
-  //   justifyContent: 'center'
-  // });
-
   const handleBlur = (event, index) => {
     updateAnswer(event, index);
   };

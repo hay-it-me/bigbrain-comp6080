@@ -8,8 +8,6 @@ import {
   Box,
   Card,
   CardContent,
-  // Snackbar,
-  // Alert
 } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import React from 'react';
@@ -20,8 +18,6 @@ import { FlexDiv } from '../utilities/helpers';
 export const Login = ({ onSuccess }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  // const [getters.errorOpen, setters.setErrorOpen] = React.useState(false);
-  // const [getters.errorMessage, setters.setErrorMessage] = React.useState('');
   const { setters } = useContext(Context);
 
   async function loginUser () {
@@ -44,13 +40,6 @@ export const Login = ({ onSuccess }) => {
       onSuccess(data.token);
     }
   }
-
-  // const handleErrorClose = (event, reason) => {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
-  //   setters.setErrorOpen(false);
-  // };
 
   const loginCard = (
     <React.Fragment>
@@ -121,11 +110,6 @@ export const Login = ({ onSuccess }) => {
 
   return (
     <>
-      {/* <Snackbar open={getters.errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
-        <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {getters.errorMessage}
-        </Alert>
-      </Snackbar> */}
       <Grid
         container
         justifyContent="center"
