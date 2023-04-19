@@ -1,0 +1,1 @@
+Navbar for convenient navigation and logging out from profile dropdown.

@@ -19,7 +19,7 @@ export const Login = ({ onSuccess }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const { setters } = useContext(Context);
-
+  // Submit handler
   async function loginUser () {
     const response = await fetch('http://localhost:5005/admin/auth/login', {
       method: 'POST',
@@ -40,7 +40,7 @@ export const Login = ({ onSuccess }) => {
       onSuccess(data.token);
     }
   }
-
+  // Card Component
   const loginCard = (
     <React.Fragment>
       <header role="banner">
@@ -94,6 +94,7 @@ export const Login = ({ onSuccess }) => {
           </div>
           <Button sx={{ m: 2 }} id="login-button" onClick={loginUser}>Log In</Button>
         </section>
+        {/* Link to register form */}
         <aside role="complementary">
           <Typography variant="subtitle2" sx={{ ml: 2 }}>
             Don&apos;t have an account? Create one <Link id="register-page" to="/register">here</Link>

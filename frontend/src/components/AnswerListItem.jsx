@@ -18,7 +18,7 @@ export const AnswerListItem = ({ id, answerData, onDelete, onSetChecked, editAns
   }
 
   const deleteAnswer = () => {
-    onDelete(true);
+    onDelete();
   };
 
   return (
