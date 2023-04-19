@@ -10,11 +10,12 @@ import {
   Dialog,
   DialogActions,
   Grid,
+  Typography
 } from '@mui/material';
 import React from 'react';
 // import ResponsiveAppBar from '../components/Navbar';
 import { QuizCard } from '../components/QuizCard';
-import { apiRequest } from '../utilities/helpers'
+import { apiRequest, FlexDiv } from '../utilities/helpers'
 import { useContext, Context } from '../context';
 
 export const Dashboard = () => {

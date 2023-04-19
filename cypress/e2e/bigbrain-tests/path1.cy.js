@@ -124,9 +124,9 @@ context('Happy Path - as described in spec', () => {
   it('Loads results page', () => {
     const newName = 'Fun Quiz'
     
-    cy.contains('.MuiDialogPaper', `Game ended for quiz: ${newName}`)
+    cy.contains('.MuiDialog-paper', `Game ended for quiz: ${newName}`)
       .children()
-      .contains('button', 'Yes')
+      .contains('a', 'Yes')
       .click();
 
     cy.url().should('include', 'viewgame');
