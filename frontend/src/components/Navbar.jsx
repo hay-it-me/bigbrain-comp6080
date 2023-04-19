@@ -164,7 +164,7 @@ function ResponsiveAppBar ({ setLogout }) {
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                   >
-                    <MenuItem key='logout' onClick={logoutUser}>
+                    <MenuItem name="logout" key='logout' onClick={logoutUser}>
                       <Typography textAlign="center">Logout</Typography>
                     </MenuItem>
                   </Menu>
