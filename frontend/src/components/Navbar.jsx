@@ -94,8 +94,8 @@ function ResponsiveAppBar ({ setLogout }) {
                 <MenuItem key='Dashboard' onClick={handleCloseNavMenu} component={Link} to="/dashboard">
                     <Typography textAlign="center">Dashboard</Typography>
                 </MenuItem>
-                <MenuItem key='Quizzes' onClick={handleCloseNavMenu} component={Link} to="/quizzes" >
-                    <Typography textAlign="center">Your Quizzes</Typography>
+                <MenuItem key='Join Game' onClick={handleCloseNavMenu} component={Link} to="/play" >
+                    <Typography textAlign="center">Join a game</Typography>
                 </MenuItem>
             </Menu>
           </Box>
@@ -129,13 +129,13 @@ function ResponsiveAppBar ({ setLogout }) {
                 Dashboard
               </Button>
               <Button
-                key='quizzes'
+                key='join game'
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
                 component={Link}
-                to="/quizzes"
+                to="/play"
               >
-                Quizzes
+                Join Game
               </Button>
           </Box>
 

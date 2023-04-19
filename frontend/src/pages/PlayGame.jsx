@@ -139,9 +139,11 @@ export const PlayGame = () => {
         if (data.error === 'Session ID is not an active session') {
           console.log('ended')
           setEnded(true);
-        } else {
+        } else if (data.error === 'Question time has not been completed') {
           setters.setErrorMessage(data.error)
           setters.setErrorOpen(true);
+          setAllowed(true);
+          setTimeout(() => { setAllowed(false) }, 100)
         }
       } else {
         // console.log(data.answerIds);
@@ -336,7 +338,7 @@ export const PlayGame = () => {
         }
         {playerId && !started &&
           <>
-            <Typography variant="h4">Wating to start</Typography>
+            <Typography variant="h4">Game has not begun. Please Wait.</Typography>
             <CircularProgress />
           </>
         }

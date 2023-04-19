@@ -15,6 +15,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useContext, Context } from '../context';
+import { FlexDiv } from '../utilities/helpers';
 
 export const Login = ({ onSuccess }) => {
   const [email, setEmail] = React.useState('');
@@ -119,6 +120,10 @@ export const Login = ({ onSuccess }) => {
           </Box>
         </Grid>
       </Grid>
+      <FlexDiv sx={{ flexDirection: 'column' }}>
+        <Typography variant='h5'>Or</Typography>
+        <Typography variant='h4'><Link to="/play">Join a Game</Link></Typography>
+      </FlexDiv>
     </>
   )
 }

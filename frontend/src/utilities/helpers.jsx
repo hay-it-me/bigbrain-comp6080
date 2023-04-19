@@ -1,5 +1,5 @@
 import config from '../config.json';
-
+import { styled } from '@mui/material';
 export const apiRequest = async (path, options) => {
   const response = await fetch(`http://localhost:${config.BACKEND_PORT}` + path, options);
   return response.json();
@@ -43,3 +43,9 @@ export function displayTime (seconds) {
   console.log(Math.ceil(seconds / divisor) + (Math.ceil(seconds / divisor) === 1 ? label : multiLabel))
   return Math.ceil(seconds / divisor) + ' ' + (Math.ceil(seconds / divisor) === 1 ? label : multiLabel);
 }
+
+export const FlexDiv = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center'
+})

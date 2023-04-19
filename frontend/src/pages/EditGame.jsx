@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { useParams, Link } from 'react-router-dom';
 import React from 'react';
-import { apiRequest, fileToDataUrl } from '../utilities/helpers';
+import { apiRequest, fileToDataUrl, FlexDiv } from '../utilities/helpers';
 import { QuestionListItem } from '../components/QuestionListItem';
 // import ResponsiveAppBar from '../components/Navbar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -121,12 +121,6 @@ export const EditGame = () => {
       setters.setErrorOpen(true);
     }
   }, [quizQuestions, quizName, quizThumbnail])
-
-  const FlexDiv = styled('div')({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  })
 
   const HiddenFileInput = styled('input')({
     display: 'none',

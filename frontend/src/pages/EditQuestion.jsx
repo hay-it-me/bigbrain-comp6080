@@ -3,7 +3,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  styled,
   FormControl,
   Input,
   Dialog,
@@ -20,7 +19,7 @@ import {
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import React from 'react';
 import { useContext, Context } from '../context';
-import { apiRequest } from '../utilities/helpers';
+import { apiRequest, FlexDiv } from '../utilities/helpers';
 import { AnswerListItem } from '../components/AnswerListItem'
 import { QuestionDetails } from '../components/QuestionDetails';
 
@@ -77,12 +76,6 @@ export const EditQuestion = () => {
       }
     }
   }, []);
-
-  const FlexDiv = styled('div')({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  });
 
   const openAddDialog = () => {
     setAddDialogOpen(true);

@@ -14,7 +14,7 @@ import {
 import React from 'react';
 // import ResponsiveAppBar from '../components/Navbar';
 import { QuizCard } from '../components/QuizCard';
-import { apiRequest } from '../utilities/helpers'
+import { FlexDiv, apiRequest } from '../utilities/helpers'
 import { useContext, Context } from '../context';
 
 export const Dashboard = () => {
@@ -91,13 +91,15 @@ export const Dashboard = () => {
         </Alert>
       </Snackbar> */}
       {/* <ResponsiveAppBar setLogout={() => logoutUser()} /> */}
-      <Button
-        // sx={{ marginTop: '30px' }}
-        variant="outlined"
-        onClick={() => setNewGameDialogOpen(true)}
-      >
-        Create a New Game
-      </Button>
+      <FlexDiv>
+        <Button
+          // sx={{ marginTop: '30px' }}
+          variant="outlined"
+          onClick={() => setNewGameDialogOpen(true)}
+        >
+          Create a New Game
+        </Button>
+      </FlexDiv>
       <Dialog
         open={newGameDialogOpen}
         onClose={closeNewGameDialog}

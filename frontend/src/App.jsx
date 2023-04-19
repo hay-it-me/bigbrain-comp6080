@@ -14,7 +14,6 @@ import ResponsiveAppBar from './components/Navbar';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
-import { Quizzes } from './pages/Quizzes';
 import { EditGame } from './pages/EditGame';
 import { EditQuestion } from './pages/EditQuestion';
 import { ViewGame } from './pages/ViewGame';
@@ -86,7 +85,6 @@ function App () {
                 <Route path="/dashboard" element={<Dashboard/> }/>
                 <Route path="/editgame/:gameId" element={<EditGame/>} />
                 <Route path="/editgame/:gameId/editquestion/:questionId" element={<EditQuestion onSuccess={() => console.log('success')} /> } />
-                <Route path="/quizzes" element={<Quizzes/> }/>
                 <Route path="/viewgame/:quizId/:sessionId" element={<ViewGame/> }/>
               </>
             }
