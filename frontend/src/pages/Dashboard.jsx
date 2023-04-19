@@ -111,7 +111,7 @@ export const Dashboard = () => {
             <InputLabel htmlFor="new-game-name">Name</InputLabel>
             <Input
               id="new-game-name"
-              name="new-game"
+              name="new-game-name"
               type="text"
               value={newGameTitle}
               onChange={(event) => {

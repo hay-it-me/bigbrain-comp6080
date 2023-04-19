@@ -26,6 +26,7 @@ export const EditGame = () => {
   const [quizQuestions, setQuizQuestions] = React.useState([]);
   const [quizName, setQuizName] = React.useState('');
   const [quizThumbnail, setQuizThumbnail] = React.useState('');
+  const [updateName, setUpdateName] = React.useState(false)
   const { getters, setters } = useContext(Context);
 
   const { gameId } = useParams();
@@ -115,7 +116,7 @@ export const EditGame = () => {
       setters.setErrorMessage(data.error);
       setters.setErrorOpen(true);
     }
-  }, [quizQuestions, quizName, quizThumbnail])
+  }, [quizQuestions, updateName, quizThumbnail])
 
   const FlexDiv = styled('div')({
     display: 'flex',
@@ -209,6 +210,8 @@ export const EditGame = () => {
       {/* <ResponsiveAppBar setLogout={() => logoutUser()} /> */}
       <FlexDiv>
         <Button
+          aria-labelledby="back-button"
+          id="back-button"
           component={Link}
           to="/dashboard"
         >
@@ -217,12 +220,14 @@ export const EditGame = () => {
         <FormControl variant="standard" >
           <Input
             id="game-name"
+            name="game-name"
             type="text"
             value={quizName}
             autoFocus
             onChange={(event) => {
               setQuizName(event.target.value);
             }}
+            onBlur={() => setUpdateName(!updateName)}
             sx={{
               fontSize: '2rem',
               marginBottom: '10px'
