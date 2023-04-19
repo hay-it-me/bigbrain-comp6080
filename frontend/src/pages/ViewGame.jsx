@@ -3,10 +3,10 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { apiRequest } from '../utilities/helpers'
-import { BarChart, XAxis, YAxis, Bar, Tooltip, Legend, CartesianGrid } from 'recharts'
+import { BarChart, XAxis, YAxis, Bar, Tooltip, Legend, CartesianGrid, ResponsiveContainer } from 'recharts'
 export const ViewGame = () => {
   const { getters, setters } = useContext(Context);
-  const [active, setActive] = React.useState(false);
+  const [active, setActive] = React.useState(true);
   const [rerenderScreen, setRerenderScreen] = React.useState(false);
   const [correct, setCorrect] = React.useState([]);
   const [time, setTime] = React.useState([]);
@@ -14,18 +14,18 @@ export const ViewGame = () => {
     user: '',
     points: 0
   }]);
-  const [results, setResults] = React.useState([{
-    name: '',
-    answers: [{
-      questionStartedAt: '',
-      answeredAt: '',
-      answerIds: [],
-      correct: false
-    }]
-  }])
+  // const [results, setResults] = React.useState([{
+  //   name: '',
+  //   answers: [{
+  //     questionStartedAt: '',
+  //     answeredAt: '',
+  //     answerIds: [],
+  //     correct: false
+  //   }]
+  // }])
   const { quizId, sessionId } = useParams();
 
-  // console.log(getters, setters, sessionId, quizId);
+  // console.log(Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, BarChart, XAxis, YAxis, Bar, Tooltip, Legend, CartesianGrid, correct, time, userPoints);
 
   const rerender = () => {
     setRerenderScreen(!rerenderScreen);
@@ -54,7 +54,7 @@ export const ViewGame = () => {
     let userPointData = [];
     const correctData = [];
     const time = [];
-    setResults(data);
+    // setResults(data);
     data.forEach((user) => {
       let points = 0;
       user.answers.forEach((answer, index) => {
@@ -143,49 +143,50 @@ export const ViewGame = () => {
   }
 
   return (
-    <>
-      <Grid container alignItems="center" direction="column" justifyContent="center">
-        {active && <Typography variant="h4">Game In Progress!</Typography>}
-        {active && <Button
-          sx={{ marginTop: '30px' }}
-          variant="outlined"
-          onClick={advanceGame}
-        >
-        Next Question
-        </Button>}
-        {active && <Button
-          sx={{ marginTop: '30px' }}
-          variant="outlined"
-          onClick={endGame}
-        >
-        End Game
-        </Button>}
-        {!active &&
-          <>
-            <Typography variant="h3">Results</Typography><br />
-            <Typography variant="h4">Top Players</Typography>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>User</TableCell>
-                    <TableCell align="right" >Points</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {userPoints.slice(0, 5).map(data => {
-                    return (
-                      <TableRow key={data}>
-                        <TableCell>{data.user}</TableCell>
-                        <TableCell align='right'>{data.points}</TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Typography variant="h4">Percentage Correct</Typography>
-            <BarChart title='% Correct' data={correct} width={800} height={500} >
+    // <>
+    <Grid container alignItems="center" direction="column" justifyContent="center">
+      {active && <Typography variant="h4">Game In Progress!</Typography>}
+      {active && <Button
+        sx={{ marginTop: '30px' }}
+        variant="outlined"
+        onClick={advanceGame}
+      >
+      Next Question
+      </Button>}
+      {active && <Button
+        sx={{ marginTop: '30px' }}
+        variant="outlined"
+        onClick={endGame}
+      >
+      End Game
+      </Button>}
+      {!active &&
+        <Grid item xs={12} sm={6} md={4} style={{ textAlign: 'center' }}>
+          <Typography variant="h3">Results</Typography><br />
+          <Typography variant="h4">Top Players</Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>User</TableCell>
+                  <TableCell align="right" >Points</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {userPoints.slice(0, 5).map(data => {
+                  return (
+                    <TableRow key={data}>
+                      <TableCell>{data.user}</TableCell>
+                      <TableCell align='right'>{data.points}</TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Typography variant="h4">Percentage Correct</Typography>
+          <ResponsiveContainer width="90%" height={500}>
+            <BarChart title='% Correct' data={correct}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey='question'>
               </XAxis>
@@ -195,8 +196,10 @@ export const ViewGame = () => {
               <Legend />
               <Bar dataKey='correct' fill='#008800' />
             </BarChart>
-            <Typography variant="h4">Average Time Taken (seconds) </Typography>
-            <BarChart title='% Correct' data={time} width={800} height={500} >
+          </ResponsiveContainer>
+          <Typography variant="h4">Average Time Taken (seconds) </Typography>
+          <ResponsiveContainer width="90%" height={500}>
+            <BarChart title='% Correct' data={time}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey='question'>
               </XAxis>
@@ -206,19 +209,10 @@ export const ViewGame = () => {
               <Legend />
               <Bar dataKey='time' fill='#ebc333' />
             </BarChart>
-            {results.map((result) => {
-              console.log(userPoints)
-              console.log(correct)
-              console.log(time)
-              return (
-                <>
-
-                </>
-              )
-            })}
-          </>
-        }
-      </Grid>
-    </>
+          </ResponsiveContainer>
+        </Grid>
+      }
+    </Grid>
+    // {/* </> */}
   )
 }

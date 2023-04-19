@@ -51,8 +51,8 @@ export const QuestionDetails = ({ question, setQuestion, points, setPoints, time
 
   return (
   <React.Fragment>
-    <Box>
-        <FormControl variant="standard" fullWidth sx={{ mt: 2 }}>
+    <Box sx={{ textAlign: 'center' }}>
+        <FormControl variant="standard" fullWidth sx={{ m: 2 }}>
         <InputLabel htmlFor="question-question">Question</InputLabel>
         <Input
           id='question-question'

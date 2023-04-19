@@ -272,7 +272,7 @@ export const EditQuestion = () => {
         alignItems="center"
         spacing={2}
       >
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={8} sm={6}>
           <Box sx={{ mt: 5, minWidth: 275 }}>
           <FlexDiv>
             <Typography variant="h4" sx={{ marginBottom: '20px' }}>

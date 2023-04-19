@@ -127,12 +127,14 @@ export const Dashboard = () => {
         container
         justifyContent="center"
         spacing={2}
+        sx={{ display: 'flex' }}
       >
         {quizzes.map((quiz) => {
-          return <Grid item xs={12} sm={6} md={4} key={'quiz-' + quiz.id}>
+          return <Grid item xs={12} sm={6} md={4} key={'quiz-' + quiz.id} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} >
             <QuizCard
               quiz={quiz}
               rerender={() => rerenderQuizList()}
+              margin='1'
             />
           </Grid>
         })}

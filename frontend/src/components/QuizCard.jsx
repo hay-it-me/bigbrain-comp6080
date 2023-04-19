@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
-import { apiRequest } from '../utilities/helpers'
+import { apiRequest, displayTime } from '../utilities/helpers'
 import { Link } from 'react-router-dom';
 import { useContext, Context } from '../context';
 // import config from '../config.json';
@@ -206,19 +206,19 @@ export const QuizCard = ({ quiz, rerender }) => {
             alt={quiz.name + ' thumbnail'}
         />
         <CardContent>
-            <Typography
+            {/* <Typography
             variant="body1"
             color="text.secondary"
             >
             {quiz.owner}
-            </Typography>
+            </Typography> */}
             {questions
               ? <Typography
               variant="body1"
               color="text.secondary"
             >
-            {questions.length} Questions
-            Time to Complete: PLACEHOLDER TXT
+            {questions.length} Questions,
+            Time to Complete: {displayTime(questions.reduce((sum, a) => sum + a.timelimit, 0))}
             </Typography>
               : <Typography
               variant="body1"

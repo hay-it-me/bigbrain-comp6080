@@ -26,3 +26,20 @@ export function fileToDataUrl (file) {
   });
   return dataUrlPromise;
 }
+
+export function displayTime (seconds) {
+  const timeUnits = [
+    [1, 'second', 'seconds'],
+    [60, 'minute', 'minutes'],
+    [60 * 60, 'hour', 'hours'],
+  ]
+  let displayUnit = timeUnits[0];
+  for (const unit of timeUnits) {
+    if (seconds >= unit[0]) {
+      displayUnit = unit;
+    }
+  }
+  const [divisor, label, multiLabel] = displayUnit;
+  console.log(Math.ceil(seconds / divisor) + (Math.ceil(seconds / divisor) === 1 ? label : multiLabel))
+  return Math.ceil(seconds / divisor) + ' ' + (Math.ceil(seconds / divisor) === 1 ? label : multiLabel);
+}
